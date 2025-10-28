@@ -34,7 +34,6 @@ export async function getOneAccount(id)
     }
 }
 
-
 export async function updateAccount(id, accountObject)
 {
     const response = await axios.put(`${URL}/accounts/update/${id}`, accountObject);
