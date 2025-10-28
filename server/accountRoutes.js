@@ -54,7 +54,7 @@ accRoutes.route('/accounts/update/:id').put(async (request, response) => {
 })
 
 //4
-accRoutes.route('/accounts/:id').delete(async (request, response) => {
+accRoutes.route('/accounts/delete/:id').delete(async (request, response) => {
     let db = database.getDatabase();
     let data = await db.collection('accounts').deleteOne({ _id: new objectId(request.params.id) });
     response.json(data);
