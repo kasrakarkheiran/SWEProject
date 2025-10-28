@@ -3,18 +3,20 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { use } from 'react'
-import axios from 'axios'
+import { getAllAccounts, getOneAccount, createAccount, deleteAccount, updateAccount } from './api'
 function App() {
+  
+  /*
   const [data, setData] = useState()
-  function createAccount() {
+  function makeAccount() {
     let accountObject={
       name: "exampleName",
       email: "exampleEmail",
       password: "examplePassword",
       dateCreated: new Date()
     }
-    axios.post('http://localhost:3000/accounts/create', accountObject)
-  }
+    createAccount(accountObject);
+  }*/
 
 
   /*useEffect(() => {
@@ -29,10 +31,8 @@ function App() {
   }, []);*/
   return (
     <>
-      <h1>JoinIn</h1>
-      <h2>CURRENT DATABASE ENTRIES</h2>
-      {JSON.stringify(data)} //Frontend backend connection verified
-      <button onClick={createAccount}>Login</button>
+      
+      <button onClick={makeAccount}>Login</button>
     </>
   )
 }
