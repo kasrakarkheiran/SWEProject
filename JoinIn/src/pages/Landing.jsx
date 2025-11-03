@@ -10,6 +10,7 @@ export function Landing() {
     return (
         <>
             <button onClick={goToSignIn}>Login</button>
+            <h1>Landing page</h1>
         </>
     );
 }

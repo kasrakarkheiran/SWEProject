@@ -1,5 +1,7 @@
-import { createAccount } from "../src/api"
+import { createAccount } from "../api"
 import { useState } from "react";
+import { auth } from "../firebase/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 export function CreateAccount() {
 
@@ -8,14 +10,29 @@ export function CreateAccount() {
         email: "",
         password: "",
         dateCreated: new Date()
-    })
+    });
+
+    function handleSignup() {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCred => console.log("User created:", userCred.user))
+            .catch(err => console.error(err));
+    }
+
+    function handleLogin() {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(userCred => console.log("Logged in:", userCred.user))
+            .catch(err => console.error(err));
+    }
 
     function handleChange(e) {
         setUser({ ...user, [e.target.name]: e.target.value });
     }
 
-    async function handleSubmit() {
+    async function handleSubmit(e) {
         e.preventDefault();
+
+        
+
         let response = await createAccount(user);
 
         if (response.status !== 200) {
