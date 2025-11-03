@@ -39,3 +39,42 @@ export async function updateAccount(id, accountObject)
     const response = await axios.put(`${URL}/accounts/update/${id}`, accountObject);
     return response;
 }
+
+//wadadwawdawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+export async function getAllPosts(){
+    const response = await axios.get(`${URL}/posts`);
+    if (response.status === 200) {
+        return response.data;
+    }
+    else{
+        return console.log("Error");
+    }
+}
+
+export async function createPost(accountObject){
+    const response = await axios.post(`${URL}/posts/create`, accountObject);
+    return response;
+}
+
+export async function deletePost(id){
+    const response = await axios.delete(`${URL}/posts/delete/${id}`);
+    return response;
+}
+
+export async function getOnePost(id)
+{
+    const response = await axios.get(`${URL}/posts/${id}`);
+    if (response.status === 200) {
+        return response.data;
+    }
+    else{
+        return null;
+    }
+}
+
+export async function updatePost(id, accountObject)
+{
+    const response = await axios.put(`${URL}/posts/update/${id}`, accountObject);
+    return response;
+}

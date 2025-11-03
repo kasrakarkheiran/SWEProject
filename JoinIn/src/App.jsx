@@ -5,11 +5,15 @@ import './App.css'
 import { use } from 'react'
 import { getAllAccounts, getOneAccount, createAccount, deleteAccount, updateAccount } from './api'
 import { HashRouter as Router, Routes, Route } from "react-router-dom"
-import { Landing } from '../pages/Landing'
-import { SignIn } from '../pages/SignIn'
+import { Landing } from './pages/Landing'
+import { SignIn } from './pages/SignIn'
+import { Home } from './pages/Home'
+// import { firebase } from 'firebase/auth'
+import {Navbar} from './components/Navbar'
+import {Layout} from './components/Layout'
 
 function App() {
-  
+  // var ui = new firebaseui.auth.AuthUI(firebase.auth());
   
   // const [data, setData] = useState()
   // function makeAccount() {
@@ -42,9 +46,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Landing/>}/>
+        <Route element={<Layout/>}>
+          <Route path="/home" element={<Home/>}/>
+        </Route>
         <Route path="/signin" element={<SignIn/>}/>
       </Routes>
-      {/* <button onClick={makeAccount}>Login</button> */}
     </Router>
   )
 }
