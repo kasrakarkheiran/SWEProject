@@ -1,19 +1,8 @@
-/* Routing:
-1: Create One
-2: Read One
-3: Update One
-4: Delete One
-5: Read All
-*/
-
-const express = require('express');
-const database = require('./connect');
+const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
 
-let accRoutes = express.Router();
-
-//1
-accRoutes.route('/accounts/create').post(async (request, response) => {
+// create account
+const createAccount = async (request, response) => {
     let db = database.getDatabase();
     let mongoObj = {
         name: request.body.name,
@@ -23,10 +12,10 @@ accRoutes.route('/accounts/create').post(async (request, response) => {
     };
     let data = await db.collection('accounts').insertOne(mongoObj);
     response.json(data);
-})
+}
 
-//2
-accRoutes.route('/accounts/:id').get(async (request, response) => {
+// get one account
+const getOneAccount = async (request, response) => {
     let db = database.getDatabase();
     let data = await db.collection('accounts').findOne({ _id: new objectId(request.params.id) });
     //check if accounts exists or not
@@ -36,10 +25,18 @@ accRoutes.route('/accounts/:id').get(async (request, response) => {
     else{
         throw new Error("Account not found");
     }
-})
+}
 
-//3 
-accRoutes.route('/accounts/update/:id').put(async (request, response) => {
+// get all accounts
+const getAllAccounts = async (request, response) => {
+    let db = database.getDatabase();
+    let data = await db.collection('accounts').find({}).toArray();
+    // TODO: maybe create a data check here
+    response.json(data);
+}
+
+// update account
+const updateAccount = async (request, response) => {
     let db = database.getDatabase();
     let mongoObj = {
         $set: {
@@ -51,24 +48,19 @@ accRoutes.route('/accounts/update/:id').put(async (request, response) => {
     };
     let data = await db.collection('accounts').updateOne({ _id: new objectId(request.params.id) } , mongoObj);
     response.json(data);
-})
+}
 
-//4
-accRoutes.route('/accounts/delete/:id').delete(async (request, response) => {
+// delete account
+const deleteAccount = async (request, response) => {
     let db = database.getDatabase();
     let data = await db.collection('accounts').deleteOne({ _id: new objectId(request.params.id) });
     response.json(data);
-})
+}
 
-
-
-//5
-accRoutes.route('/accounts').get(async (request, response) => {
-    let db = database.getDatabase();
-    let data = await db.collection('accounts').find({}).toArray();
-    // TODO: maybe create a data check here
-    response.json(data);
-})
-
-
-module.exports = accRoutes;
+module.exports = {
+    createAccount,
+    getOneAccount,
+    getAllAccounts,
+    deleteAccount,
+    updateAccount
+}
