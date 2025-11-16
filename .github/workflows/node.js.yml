@@ -28,15 +28,15 @@ jobs:
         cache: 'npm'
    # ---- FRONTEND ----
     - name: Install frontend deps
-      working-directory: ./Joinin
+      working-directory: ./JoinIn
       run: npm ci
 
     - name: Build frontend
-      working-directory: ./Joinin
+      working-directory: ./JoinIn
       run: npm run build --if-present
 
     - name: Test frontend
-      working-directory: ./Joinin
+      working-directory: ./JoinIn
       run: npm test --if-present
 
 
