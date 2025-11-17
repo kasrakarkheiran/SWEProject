@@ -1,21 +1,17 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { use } from 'react'
-import { getAllAccounts, getOneAccount, createAccount, deleteAccount, updateAccount } from './api'
-import { HashRouter as Router, Routes, Route } from "react-router-dom"
-import { Landing } from './pages/Landing'
-import { Signup } from './pages/Signup'
-import { Login } from './pages/Login.jsx'
-import { Home } from './pages/Home'
-import {Navbar} from './components/Navbar'
+import {HashRouter as Router, Routes, Route} from "react-router-dom"
+import {Landing} from './pages/Landing'
+import {Signup}  from './pages/Signup'
+import {Login} from './pages/Login.jsx'
+import {Home} from './pages/Home'
 import {Layout} from './components/Layout'
 
 function App() {
   //Pages so far:
   //Landing
-  //Sign Up
+  //Sign up
+  //Log in
+  //Home
 
   return (
     <Router>
