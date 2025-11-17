@@ -40,17 +40,6 @@ export async function updateAccount(id, accountObject)
     return response;
 }
 
-export async function signup(id, accountObject)
-{
-    const response = await axios.put(`${URL}/signup$`, accountObject);
-    return response;
-}
-
-export async function login(id, accountObject)
-{
-    const response = await axios.put(`${URL}/login`, accountObject);
-    return response;
-}
 
 //wadadwawdawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 

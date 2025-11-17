@@ -6,6 +6,8 @@
 }
 
 :root {
+  --error: #e7195a;
+  
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -92,6 +94,15 @@ form.signup, form.login {
 }
 form.signup label, form.login label {
   margin: 0 20px;
+}
+
+div.error {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 4px;
+  margin: 20px 0;
 }
 
 @media (prefers-color-scheme: light) {
