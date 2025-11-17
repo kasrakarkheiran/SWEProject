@@ -1,8 +1,8 @@
 const connect = require('./connect');
 const express = require('express');
 const cors = require('cors');
-const accounts = require('./accountRoutes');
-const posts = require('./postRoutes');
+const accounts = require('./routes/accountRoutes.js');
+const posts = require('./routes/postRoutes.js');
 
 const app = express();
 const port = 3000;
