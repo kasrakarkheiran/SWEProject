@@ -105,6 +105,26 @@ div.error {
   margin: 20px 0;
 }
 
+/* post styling */
+.post {
+  background: #242424;
+  border-radius: 4px;
+  margin: 20px auto;
+  padding: 20px;
+  position: relative;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+/* delete button */
+.post-details span {
+  cursor: pointer;
+  background: #f1f1f1;
+  padding: 6px;
+  border-radius: 50%;
+  color: #333;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
