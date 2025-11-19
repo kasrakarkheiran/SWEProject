@@ -32,6 +32,7 @@ export function Navbar(){
             {user && (
                 <div>
                     <span>{user.email}</span>
+                    <button><Link to="/profile">Profile</Link></button> 
                     <button onClick={handleClick}>Log out</button>
                 </div>
             )}

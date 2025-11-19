@@ -31,7 +31,7 @@ const PostDetails = ({post}) => {
             <p>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true})}</p>
         </div>
         */
-       // for now it's just the delete symbol
+       // for now it's just the delete button
        <div className="post-details">
         <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
        </div>
