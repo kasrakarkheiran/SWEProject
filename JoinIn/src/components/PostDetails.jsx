@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
 import PostEdit from './PostEdit.jsx'
+// date fns
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const PostDetails = ({post}) => {
     const {user} = useAuthContext()
@@ -39,6 +41,7 @@ const PostDetails = ({post}) => {
         */
        // for now it's just the delete button
        <div className="post-details">
+        <p>{formatDistanceToNow(new Date(post.dateCreated), { addSuffix: true})}</p>
         <span className="material-symbols-outlined" onClick={handleClickDelete}>delete</span>
         <span className="material-symbols-outlined" onClick={handleClickEdit}>edit</span>
         {showEdit && <PostEdit key={post._id} postToEdit={post}/>}

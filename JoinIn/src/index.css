@@ -69,21 +69,24 @@ button:focus-visible, .landing a {
 /* navbar */
 .navbar {
   position: fixed;
+  background-color: #1a1a1a;
+  z-index: 999;
   top: 0;
-  width: 50%;
-  left: 25%;
-  display: flex;
-  justify-content: space-between;
+  left: 0;
+  width: 100%;
+  justify-content: center;
+}
 
+.navbar button a {
+  color: white;
 }
 
 .navItem {
-  padding: 4px;
-  margin: 4px;
-  color: white;
-  border-style: solid;
-  border-width: 2px;
-  border-radius: 4px;
+  margin-right: 100px; 
+}
+  
+.navItem:last-child {
+  margin-right: 0;
 }
 
 /* auth forms */

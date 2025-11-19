@@ -31,15 +31,15 @@ export function Navbar(){
         <div className="navbar">
             {user && (
                 <div>
-                    <span>{user.email}</span>
-                    <button><Link to="/profile">Profile</Link></button> 
-                    <button onClick={handleClick}>Log out</button>
+                    <span className="navItem">{user.email}</span>
+                    <button className="navItem"><Link to="/profile">Profile</Link></button> 
+                    <button className="navItem" onClick={handleClick}>Log out</button>
                 </div>
             )}
             {!user && (
                 <div>
-                <button><Link to="/login">Login</Link></button>         
-                <button><Link to="/signup">Signup</Link></button>
+                <button className="navItem"><Link to="/login">Login</Link></button>         
+                <button className="navItem"><Link to="/signup">Signup</Link></button>
                 </div>)}
         </div>
 

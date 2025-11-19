@@ -20,8 +20,9 @@ const PostForm = () => {
 
         const description = content;
         const author = user.email
+        const dateCreated = new Date();
 
-        const post = {title, description, content, author};
+        const post = {title, description, content, author, dateCreated};
 
         const response = await fetch('/posts/create', {
             method: 'POST',
