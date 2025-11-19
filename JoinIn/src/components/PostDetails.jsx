@@ -1,11 +1,13 @@
-
+import {useState} from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
-
+import PostEdit from './PostEdit.jsx'
 
 const PostDetails = ({post}) => {
     const {user} = useAuthContext()
+    const [showEdit, setShowEdit] = useState(false)
 
-    const handleClick = async () => {
+
+    const handleClickDelete = async () => {
         if (!user) {
             return
         }
@@ -21,6 +23,10 @@ const PostDetails = ({post}) => {
             //dispatch({type: 'DELETE_POST', payload: json})
         }
     }
+
+    const handleClickEdit = async () => {
+        setShowEdit(true);
+    }
     
     return (
         /*
@@ -33,7 +39,9 @@ const PostDetails = ({post}) => {
         */
        // for now it's just the delete button
        <div className="post-details">
-        <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
+        <span className="material-symbols-outlined" onClick={handleClickDelete}>delete</span>
+        <span className="material-symbols-outlined" onClick={handleClickEdit}>edit</span>
+        {showEdit && <PostEdit key={post._id} postToEdit={post}/>}
        </div>
        
 
