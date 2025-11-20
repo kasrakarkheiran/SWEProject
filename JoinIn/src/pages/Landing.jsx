@@ -1,16 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import {Link} from 'react-router-dom';
 
 export function Landing() {
-    const navigate = useNavigate();
-    
-    const goToSignUp = () => {
-        navigate("/signup");
-    }
-
     return (
         <>
-            <button onClick={goToSignUp}>Sign up</button>
             <h1>Landing page</h1>
+            <div className="landing">
+                <Link to="/login">Log in</Link>
+                <Link to="/signup">Sign up</Link>
+            </div>
         </>
     );
 }

@@ -8,6 +8,7 @@ const {
     deleteAccount
 } = require('../controllers/accountController.js')
 
+
 let accRoutes = express.Router();
 
 // POST new account

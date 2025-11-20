@@ -1,26 +1,27 @@
 const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
 
-// create account
-const createAccount = async (request, response) => {
-    let db = database.getDatabase();
-    let mongoObj = {
-        name: request.body.name,
-        email: request.body.email,
-        password: request.body.password,
-        dateCreated: request.body.dateCreated
-    };
-    let data = await db.collection('accounts').insertOne(mongoObj);
-    response.json(data);
+const { createAccountInDb } = require('../services/accountService');
+
+// create account using service function (used by authcontroller too)
+const createAccount = async (req, res) => {
+  try {
+    let db = database.getDatabase()
+    const user = await createAccountInDb(db, req.body)
+    res.status(201).json(user)
+  } catch (err) {
+    res.status(400).json(err)
+  }
 }
 
+
 // get one account
-const getOneAccount = async (request, response) => {
+const getOneAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').findOne({ _id: new objectId(request.params.id) });
+    let data = await db.collection('accounts').findOne({ _id: new objectId(req.params.id) });
     //check if accounts exists or not
     if (Object.keys(data).length > 0){
-        response.json(data);
+        res.json(data);
     }
     else{
         throw new Error("Account not found");
@@ -28,39 +29,40 @@ const getOneAccount = async (request, response) => {
 }
 
 // get all accounts
-const getAllAccounts = async (request, response) => {
+const getAllAccounts = async (req, res) => {
     let db = database.getDatabase();
     let data = await db.collection('accounts').find({}).toArray();
     // TODO: maybe create a data check here
-    response.json(data);
+    res.json(data);
 }
 
 // update account
-const updateAccount = async (request, response) => {
+const updateAccount = async (req, res) => {
     let db = database.getDatabase();
     let mongoObj = {
         $set: {
-            name: request.body.name,
-            email: request.body.email,
-            password: request.body.password,
-            dateCreated: request.body.dateCreated
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            dateCreated: req.body.dateCreated
         }
     };
-    let data = await db.collection('accounts').updateOne({ _id: new objectId(request.params.id) } , mongoObj);
-    response.json(data);
+    let data = await db.collection('accounts').updateOne({ _id: new objectId(req.params.id) } , mongoObj);
+    res.json(data);
 }
 
 // delete account
-const deleteAccount = async (request, response) => {
+const deleteAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').deleteOne({ _id: new objectId(request.params.id) });
-    response.json(data);
+    let data = await db.collection('accounts').deleteOne({ _id: new objectId(req.params.id) });
+    res.json(data);
 }
+
 
 module.exports = {
     createAccount,
     getOneAccount,
     getAllAccounts,
     deleteAccount,
-    updateAccount
+    updateAccount,
 }

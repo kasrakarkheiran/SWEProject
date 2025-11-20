@@ -1,36 +1,47 @@
-import { useState } from "react";
-import { createAccount } from "../api";
+import {useState} from 'react'
+import {useSignup} from "../hooks/useSignup.jsx"
+
 
 export function Signup() {
-    const [user, setUser] = useState( {
-            name: "",
-            email: "",
-            password: "",
-            dateCreated: new Date()
-        });
-    
-        function handleChange(e) {
-            setUser({ ...user, [e.target.name]: e.target.value });
-        }
-    
-        async function handleSubmit(e) {
-            e.preventDefault();
-    
-            let response = await createAccount(user);
-    
-            if (response.status !== 200) {
-                alert("User account could not be created");
-            }
-    
-            console.log(response.status);
-        }
-    
-        return (
-            <form onSubmit={handleSubmit}>
-                <input placeholder={"Name"} onChange={handleChange} name="name" required maxLength={30}/>
-                <input placeholder={"Email"} onChange={handleChange} name="email" required maxLength={40}/>
-                <input placeholder={"Password"} onChange={handleChange} name="password" type="password" required maxLength={20}/>
-                <button type="submit">Create Account</button>
-            </form>
-        )
+    const [name, setName]= useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const {signup, error, isLoading} = useSignup()
+    const handleSubmit = async (e) => {
+        //prevent default refresh
+        e.preventDefault()
+
+        await signup(name, email, password)
+    }
+
+
+    return (
+        <form className="signup" onSubmit={handleSubmit}  >
+            <h3>Sign up</h3>
+
+            <label>Name:</label>
+            <input 
+                type="name" 
+                onChange={(e) => setName(e.target.value)} 
+                value={name}
+            />
+            <label>Email:</label>
+            <input 
+                type="email" 
+                onChange={(e) => setEmail(e.target.value)} 
+                value={email}
+            />
+            <label>Password:</label>
+            <input 
+                type="password" 
+                onChange={(e) => setPassword(e.target.value)} 
+                value={password}
+            />
+
+            <button disabled={isLoading}>Sign up</button>
+            {error && <div className="error">{error}</div>}
+        </form>
+    )
 }
+
+export default Signup

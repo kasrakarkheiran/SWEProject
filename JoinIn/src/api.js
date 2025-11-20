@@ -40,6 +40,7 @@ export async function updateAccount(id, accountObject)
     return response;
 }
 
+
 //wadadwawdawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 
 export async function getAllPosts(){

@@ -1,7 +1,39 @@
+import {useState} from 'react'
+import {useLogin} from '../hooks/useLogin.jsx'
+
 export function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const {login, error, isLoading} = useLogin()
+
+    const handleSubmit = async (e) => {
+        //prevent default refresh
+        e.preventDefault()
+
+        await login(email, password)
+    }
+
+
     return (
-        <>
-            <h1>Login Page</h1>
-        </>
-    );
+        <form className="login" onSubmit={handleSubmit}>
+            <h3>Log in</h3>
+
+            <label>Email:</label>
+            <input 
+                type="email" 
+                onChange={(e) => setEmail(e.target.value)} 
+                value={email}
+            />
+            <label>Password:</label>
+            <input 
+                type="password" 
+                onChange={(e) => setPassword(e.target.value)} 
+                value={password}
+            />
+
+            <button disabled={isLoading}>Log in</button>
+            {error && <div class="error">{error}</div>}
+        </form>
+    )
 }
+

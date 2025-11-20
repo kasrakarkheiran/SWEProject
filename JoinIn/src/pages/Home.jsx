@@ -1,6 +1,10 @@
 import { getAllPosts, getAllAccounts} from "../api"
 import {useEffect, useState} from "react";
 
+// components
+import PostForm from "../components/PostForm.jsx"
+import PostDetails from "../components/PostDetails.jsx";
+
 export function Home() {
     
     const [posts, setPosts] = useState([]);
@@ -16,15 +20,22 @@ export function Home() {
     return (
         <>
             <h1>HOME</h1>
+            <PostForm/>
             {posts.map((posts) => {
                 return (
                     <>
+                    <div className="post">
                         <h2>{posts.title}</h2>
                         <p>{posts.content}</p>
                         <p>By: {posts.author}</p>
+                    </div>
+                        
+                        {/*delete button*/}
+                        <PostDetails key={posts._id} post={posts}/>
                     </>
                 )
             })}
+            
         </>
     );
 }

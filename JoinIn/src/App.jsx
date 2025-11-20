@@ -1,33 +1,36 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { use } from 'react'
-import { getAllAccounts, getOneAccount, createAccount, deleteAccount, updateAccount } from './api'
-import { HashRouter as Router, Routes, Route } from "react-router-dom"
-import { Landing } from './pages/Landing'
-import { Signup } from './pages/Signup'
-import { Login } from './pages/Login.jsx'
-import { Home } from './pages/Home'
-import {Navbar} from './components/Navbar'
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import {Landing} from './pages/Landing'
+import {Signup}  from './pages/Signup'
+import {Login} from './pages/Login.jsx'
+import {Home} from './pages/Home'
+import {Profile} from './pages/Profile'
 import {Layout} from './components/Layout'
+import {useAuthContext} from './hooks/useAuthContext.jsx';
 
 function App() {
   //Pages so far:
   //Landing
-  //Sign Up
+  //Sign up
+  //Log in
+  //Home
+  //Profle
+
+  const {user} = useAuthContext()
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing/>}/>
         <Route element={<Layout/>}>
-          <Route path="/home" element={<Home/>}/>
+          <Route path="/home" element={user ? <Home/> : <Navigate to="/"/>}/>
         </Route>
-        <Route path="/signup" element={<Signup/>}/>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/profile" element={user ? <Profile/> : <Navigate to="/"/>}/>
+
+        <Route path="/" element={!user ? <Landing/> : <Navigate to="/home"/>}/>
+        <Route path="/signup" element={!user ? <Signup/> : <Navigate to="/home"/>}/>
+        <Route path="/login" element={!user ? <Login/> : <Navigate to="/home"/>}/>
+        
       </Routes>
-    </Router>
+    </BrowserRouter>
   )
 }
 
