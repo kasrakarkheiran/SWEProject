@@ -10,5 +10,9 @@ export const pageData = [
     {
         name: "Log In",
         path: "/login"
+    },
+    {
+        name: "Profile",
+        path: "/profile"
     }
 ]
