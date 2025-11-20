@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 // components
 import PostForm from "../components/PostForm.jsx"
 import PostDetails from "../components/PostDetails.jsx";
+import { PostCard } from "../components/PostCard.jsx";
 
 export function Home() {
     
@@ -20,19 +21,22 @@ export function Home() {
     return (
         <>
             <h1>HOME</h1>
-            <PostForm/>
+            {/*<PostForm/>*/}
             {posts.map((posts) => {
                 return (
-                    <>
-                    <div className="post">
-                        <h2>{posts.title}</h2>
-                        <p>{posts.content}</p>
-                        <p>By: {posts.author}</p>
+                    <div>
+                        <PostCard post = {posts}/>
                     </div>
+                    // <>
+                    // <div className="post">
+                    //     <h2>{posts.title}</h2>
+                    //     <p>{posts.content}</p>
+                    //     <p>By: {posts.author}</p>
+                    // </div>
                         
-                        {/*delete button*/}
-                        <PostDetails key={posts._id} post={posts}/>
-                    </>
+                    //     {/*delete button
+                    //     <PostDetails key={posts._id} post={posts}/>*/}
+                    // </>
                 )
             })}
             

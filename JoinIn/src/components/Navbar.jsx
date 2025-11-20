@@ -32,6 +32,7 @@ export function Navbar(){
             {user && (
                 <div>
                     <span className="navItem">{user.email}</span>
+                    <button className = "navItem"><Link to="/home">Home</Link></button>
                     <button className="navItem"><Link to="/profile">Profile</Link></button> 
                     <button className="navItem" onClick={handleClick}>Log out</button>
                 </div>
