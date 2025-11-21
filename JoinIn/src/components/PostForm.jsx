@@ -1,12 +1,16 @@
 import { useState } from "react"
 import { useAuthContext } from "../hooks/useAuthContext"
+import { usePostsContext} from "../hooks/usePostsContext"
 
 
 const PostForm = () => {
+    const {dispatch} = usePostsContext()
     const {user} = useAuthContext()
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [category, setCategory] = useState('')
+    const [eventDate, setEventDate] = useState('');
     const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {
@@ -22,7 +26,13 @@ const PostForm = () => {
         const author = user.email
         const dateCreated = new Date();
 
-        const post = {title, description, content, author, dateCreated};
+        const post = {title, 
+                    description, 
+                    content, 
+                    author, 
+                    category, 
+                    eventDate, 
+                    dateCreated};
 
         const response = await fetch('/posts/create', {
             method: 'POST',
@@ -50,9 +60,13 @@ const PostForm = () => {
         if (response.ok){
             setTitle('');
             setContent('');
+            setCategory('')
+            setEventDate('')
             setError(null);
             console.log('new post added', json ?? text);
 
+            // If server returned JSON payload, dispatch it; otherwise skip dispatch
+            if (json) dispatch({type: 'CREATE_POST', payload: json});
         }
     }
 
@@ -71,6 +85,22 @@ const PostForm = () => {
                 onChange={(e)=> setContent(e.target.value)}
                 value={content}
             />
+            <label>Event Date:</label>
+            <input 
+                type="date"
+                onChange={(e)=> setEventDate(e.target.value)}
+                value={eventDate}
+                />
+            <label>Choose a category:</label>
+            <select
+                value={category}
+                onChange={(e)=> setCategory(e.target.value)}
+                >
+                <option value="soccer">Soccer</option>
+                <option value="football">Football</option>
+                <option value="tag">Tag</option>
+                <option value="wrestling">Wrestling</option>
+            </select>
             <button>Add post</button>
             {error && <div className="error">{error}</div>}
             

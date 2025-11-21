@@ -1,4 +1,5 @@
-
+import {format} from 'date-fns'
+import PostDetails from './PostDetails'
 
 export function PostCard({post}){
     return (
@@ -8,7 +9,7 @@ export function PostCard({post}){
             <p>Date: {post.eventDate}</p>
             <p>Category: {post.category}</p>
             <p>By: {post.author}</p>
-            
+            {/*<PostDetails key={post._id} post={post}/>*/}
         </div>
     )
 }

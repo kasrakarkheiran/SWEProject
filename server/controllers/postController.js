@@ -21,8 +21,15 @@ const createPost = async (request, response) => {
         eventDate: request.body.eventDate,
         dateCreated : request.body.dateCreated
     };
-    let data = await db.collection('posts').insertOne(mongoObj);
-    response.json(data);
+
+    // Insert the document
+    const result = await db.collection('posts').insertOne(mongoObj);
+
+    // Fetch the newly inserted document
+    const insertedPost = await db.collection('posts').findOne({ _id: result.insertedId });
+
+    // Send it back in response
+    response.json(insertedPost);
 }
 
 // get a single post
