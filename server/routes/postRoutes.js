@@ -2,6 +2,7 @@ const express = require('express');
 
 const {
     createPost,
+    getFilteredPosts,
     getOnePost,
     getAllPosts,
     updatePost,
@@ -14,6 +15,9 @@ let postsRoutes = express.Router();
 
 // POST a new post
 postsRoutes.post('/posts/create', createPost)
+
+//GET filtered posts
+postsRoutes.get('/posts/filter', getFilteredPosts)
 
 // GET a single post
 postsRoutes.get('/posts/:id', getOnePost)

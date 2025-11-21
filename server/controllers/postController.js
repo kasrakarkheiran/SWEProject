@@ -25,6 +25,48 @@ const createPost = async (request, response) => {
     response.json(data);
 }
 
+
+// get all posts with filters
+const getFilteredPosts = async (request, response) => {
+    console.log("Received query:", request.query);
+    let db = database.getDatabase();
+    let query = {};
+
+    // Filter by category if provided
+    if (request.query.category && request.query.category !== '') {
+        query.category = request.query.category;
+    }
+
+    // Filter by event date range if provided
+    if (request.query.eventStartDate || request.query.eventEndDate) {
+        const dateFilter = {};
+
+        if (request.query.eventStartDate) {
+            dateFilter.$gte = new Date(request.query.eventStartDate);
+        }
+
+        if (request.query.eventEndDate) {
+            const end = new Date(request.query.eventEndDate);
+            end.setDate(end.getDate() + 1);
+            dateFilter.$lte = end;
+        }
+
+        // Only add if there is actually a condition
+        if (Object.keys(dateFilter).length > 0) {
+            query.eventDate = dateFilter;
+        }
+    }
+
+    try {
+        console.log("Mongo query:", query);
+        let data = await db.collection('posts').find(query).toArray();
+        response.json(data);
+    } catch (error) {
+        response.status(500).json({ error: error.message });
+    }
+}
+
+
 // get a single post
 const getOnePost = async (request, response) => {
     let db = database.getDatabase();
@@ -73,6 +115,7 @@ const deletePost = async (request, response) => {
 
 module.exports = {
     createPost,
+    getFilteredPosts,
     getOnePost,
     getAllPosts,
     updatePost,
