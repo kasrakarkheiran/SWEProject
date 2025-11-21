@@ -17,6 +17,8 @@ const createPost = async (request, response) => {
         description: request.body.description,
         content : request.body.content,
         author : request.body.author,
+        category: request.body.category,
+        eventDate: request.body.eventDate,
         dateCreated : request.body.dateCreated
     };
     let data = await db.collection('posts').insertOne(mongoObj);
@@ -52,6 +54,8 @@ const updatePost = async (request, response) => {
             description: request.body.description,
             content : request.body.content,
             author : request.body.author,
+            category: request.body.category,
+            eventDate: request.body.eventDate,
             dateCreated : request.body.dateCreated
         }
     };
