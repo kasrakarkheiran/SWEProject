@@ -106,7 +106,6 @@ export function Home() {
                     // </>
                 )
             })}  */}
-              <h1>HOME</h1>
 
             {/* Filter Section */}
             <div style={{ 

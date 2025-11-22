@@ -18,7 +18,7 @@ const createAccount = async (req, res) => {
 // get one account
 const getOneAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').findOne({ _id: new objectId(req.params.id) });
+    let data = await db.collection('accounts').findOne({ email: req.params.email});
     //check if accounts exists or not
     if (Object.keys(data).length > 0){
         res.json(data);
@@ -47,14 +47,31 @@ const updateAccount = async (req, res) => {
             dateCreated: req.body.dateCreated
         }
     };
-    let data = await db.collection('accounts').updateOne({ _id: new objectId(req.params.id) } , mongoObj);
+    let data = await db.collection('accounts').updateOne({ email: req.params.email} , mongoObj);
     res.json(data);
+}
+
+const updateEvents = async (req, res) => {
+    let db = database.getDatabase();
+    let objEvents = {
+        $set: {
+            events: req.body.events
+        }
+    };
+    try{
+        let user = await db.collection("accounts").findOne({email: req.params.email});
+        let data = await db.collection("accounts").updateOne( { _id: new objectId(user._id) }, objEvents );
+        res.json(data);
+    }catch(error){
+        console.error("This code is not working: ", error);
+        throw error;
+    }
 }
 
 // delete account
 const deleteAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').deleteOne({ _id: new objectId(req.params.id) });
+    let data = await db.collection('accounts').deleteOne({ email: new objectId(req.params.id) });
     res.json(data);
 }
 
@@ -65,4 +82,5 @@ module.exports = {
     getAllAccounts,
     deleteAccount,
     updateAccount,
+    updateEvents,
 }

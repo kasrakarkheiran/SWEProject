@@ -5,7 +5,8 @@ const {
     getOneAccount,
     getAllAccounts,
     updateAccount,
-    deleteAccount
+    deleteAccount,
+    updateEvents
 } = require('../controllers/accountController.js')
 
 
@@ -19,6 +20,9 @@ accRoutes.get('/accounts/:id', getOneAccount)
 
 // PATCH account
 accRoutes.patch('/accounts/update/:id', updateAccount)
+
+// PATCH account events
+accRoutes.patch('/accounts/uevents/:email', updateEvents);
 
 // DELETE account
 accRoutes.delete('/accounts/delete/:id', deleteAccount)

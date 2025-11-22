@@ -15,7 +15,7 @@
 }
 
 /* Navigation */
-.navbar {
+.navbar-landing {
   position: fixed;
   top: 0;
   width: 100%;
@@ -25,7 +25,7 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.navbar-content {
+.landing-navbar-content {
   max-width: 1440px;
   margin: 0 auto;
   padding: 1rem 1.5rem;
@@ -34,7 +34,7 @@
   align-items: center;
 }
 
-.navbar-brand {
+.landing-navbar-brand {
   font-size: 1.5rem;
   font-weight: bold;
   background: linear-gradient(to right, #2563eb, #9333ea);
@@ -43,12 +43,12 @@
   background-clip: text;
 }
 
-.navbar-buttons {
+.landing-navbar-buttons {
   display: flex;
   gap: 1rem;
 }
 
-.btn-login {
+.landing-btn-login {
   padding: 0.5rem 1.5rem;
   background: linear-gradient(to right, #2563eb, #9333ea);
   color: #374151;
@@ -58,12 +58,19 @@
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.btn-login:hover {
+.landing-btn-login:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
 }
 
-.btn-signup {
+.landing-link{
+  color: white;
+}
+.landing-link:hover{
+  color: white;
+}
+
+.landing-btn-signup {
   padding: 0.5rem 1.5rem;
   background: linear-gradient(to right, #2563eb, #9333ea);
   color: white;
@@ -74,7 +81,7 @@
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.btn-signup:hover {
+.landing-btn-signup:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
 }

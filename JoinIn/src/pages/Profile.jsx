@@ -1,20 +1,263 @@
 import {useAuthContext} from "../hooks/useAuthContext";
 
+import React, { useState } from 'react';
+import { User, Calendar, Plus, Heart } from 'lucide-react';
+import { Navbar } from "../components/Navbar";
+import '../styles/profile.css';
+
+
 export function Profile() {
   const {user} = useAuthContext();
+  const [activeTab, setActiveTab] = useState('account');
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    eventDate: '',
+    category: ''
+  });
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log('Event Created:', formData);
+    // Add your API call here to create event
+    setFormData({
+      title: '',
+      description: '',
+      eventDate: '',
+      category: ''
+    });
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Profile</h1>
+        <div className="profile-container">
+      <Navbar />
+      
+      <div className="profile-content">
+        {/* Profile Header */}
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <User size={48} />
+          </div>
+          <div className="profile-header-info">
+            <h1 className="profile-name">My Profile</h1>
+            <p className="profile-subtitle">Manage your account and activities</p>
+          </div>
+        </div>
 
-      <img 
-        src={user.avatar || "https://via.placeholder.com/150"} 
-        width="120"
-        style={{ borderRadius: "50%" }}
-      />
+        {/* Tab Navigation */}
+        <div className="tabs-container">
+          <div className="tabs-nav">
+            <button
+              className={`tab-button ${activeTab === 'account' ? 'active' : ''}`}
+              onClick={() => setActiveTab('account')}
+            >
+              <User size={20} />
+              Account Information
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'myEvents' ? 'active' : ''}`}
+              onClick={() => setActiveTab('myEvents')}
+            >
+              <Calendar size={20} />
+              My Events
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'createEvent' ? 'active' : ''}`}
+              onClick={() => setActiveTab('createEvent')}
+            >
+              <Plus size={20} />
+              Create Event
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'subscribed' ? 'active' : ''}`}
+              onClick={() => setActiveTab('subscribed')}
+            >
+              <Heart size={20} />
+              Subscribed To
+            </button>
+          </div>
 
-      <p><strong>Name:</strong> {user.name || "not implemented"}</p>
-      <p><strong>Email:</strong> {user.email}</p>
+          {/* Tab Content */}
+          <div className="tab-content">
+            {/* Account Information Tab */}
+            {activeTab === 'account' && (
+              <div className="tab-pane active">
+                <div className="account-card">
+                  <h2 className="tab-title">Account Information</h2>
+                  <div className="account-info-grid">
+                    <div className="account-field">
+                      <label className="field-label">Email</label>
+                      <p className="field-value">user@example.com</p>
+                    </div>
+                    <div className="account-field">
+                      <label className="field-label">Username</label>
+                      <p className="field-value">John Doe</p>
+                    </div>
+                    <div className="account-field">
+                      <label className="field-label">Member Since</label>
+                      <p className="field-value">January 2025</p>
+                    </div>
+                    <div className="account-field">
+                      <label className="field-label">Events Created</label>
+                      <p className="field-value">5</p>
+                    </div>
+                  </div>
+                  <button className="btn-edit">Edit Profile</button>
+                </div>
+              </div>
+            )}
+
+            {/* My Events Tab */}
+            {activeTab === 'myEvents' && (
+              <div className="tab-pane active">
+                <h2 className="tab-title">My Events</h2>
+                <div className="events-grid">
+                  <div className="event-card">
+                    <div className="event-header">
+                      <h3 className="event-title">Basketball Game</h3>
+                      <span className="event-badge">Upcoming</span>
+                    </div>
+                    <p className="event-info">📍 Central Park</p>
+                    <p className="event-info">📅 March 15, 2025</p>
+                    <p className="event-participants">👥 8 people joined</p>
+                  </div>
+                  <div className="event-card">
+                    <div className="event-header">
+                      <h3 className="event-title">Soccer Match</h3>
+                      <span className="event-badge">Upcoming</span>
+                    </div>
+                    <p className="event-info">📍 Downtown Field</p>
+                    <p className="event-info">📅 March 18, 2025</p>
+                    <p className="event-participants">👥 12 people joined</p>
+                  </div>
+                </div>
+                {/* Placeholder for empty state */}
+                <div className="empty-state">
+                  <p>No events created yet. Start by creating your first event!</p>
+                </div>
+              </div>
+            )}
+
+            {/* Create Event Tab */}
+            {activeTab === 'createEvent' && (
+              <div className="tab-pane active">
+                <h2 className="tab-title">Create Event</h2>
+                <form onSubmit={handleFormSubmit} className="create-event-form">
+                  <div className="form-group">
+                    <label htmlFor="title" className="form-label">Event Title</label>
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleFormChange}
+                      placeholder="Enter event title (e.g., Tuesday Basketball)"
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="description" className="form-label">Description</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleFormChange}
+                      placeholder="Describe your event, skill level, what to bring, etc."
+                      className="form-textarea"
+                      rows="4"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="category" className="form-label">Category</label>
+                      <select
+                        id="category"
+                        name="category"
+                        value={formData.category}
+                        onChange={handleFormChange}
+                        className="form-select"
+                        required
+                      >
+                        <option value="">Select a sport</option>
+                        <option value="basketball">Basketball</option>
+                        <option value="soccer">Soccer</option>
+                        <option value="volleyball">Volleyball</option>
+                        <option value="tennis">Tennis</option>
+                        <option value="badminton">Badminton</option>
+                        <option value="frisbee">Frisbee</option>
+                        <option value="pickleball">Pickleball</option>
+                        <option value="cricket">Cricket</option>
+                        <option value="baseball">Baseball</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="eventDate" className="form-label">Event Date</label>
+                      <input
+                        type="date"
+                        id="eventDate"
+                        name="eventDate"
+                        value={formData.eventDate}
+                        onChange={handleFormChange}
+                        className="form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button type="submit" className="btn-submit">Create Event</button>
+                </form>
+              </div>
+            )}
+
+            {/* Subscribed To Tab */}
+            {activeTab === 'subscribed' && (
+              <div className="tab-pane active">
+                <h2 className="tab-title">Subscribed Events</h2>
+                <div className="events-grid">
+                  <div className="event-card subscribed">
+                    <div className="event-header">
+                      <h3 className="event-title">Volleyball Game</h3>
+                      <span className="event-badge">Joined</span>
+                    </div>
+                    <p className="event-info">📍 Beach Courts</p>
+                    <p className="event-info">📅 March 16, 2025</p>
+                    <p className="event-participants">👥 6 people attending</p>
+                    <button className="btn-leave">Leave Event</button>
+                  </div>
+                  <div className="event-card subscribed">
+                    <div className="event-header">
+                      <h3 className="event-title">Tennis Match</h3>
+                      <span className="event-badge">Joined</span>
+                    </div>
+                    <p className="event-info">📍 Tennis Court</p>
+                    <p className="event-info">📅 March 20, 2025</p>
+                    <p className="event-participants">👥 4 people attending</p>
+                    <button className="btn-leave">Leave Event</button>
+                  </div>
+                </div>
+                {/* Placeholder for empty state */}
+                <div className="empty-state">
+                  <p>You haven't subscribed to any events yet. Go to home to find events!</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
