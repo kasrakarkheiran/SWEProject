@@ -7,11 +7,12 @@ export function Signup() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const {signup, error, isLoading} = useSignup()
+    const events = [];
     const handleSubmit = async (e) => {
         //prevent default refresh
         e.preventDefault()
 
-        await signup(name, email, password)
+        await signup(name, email, password, events)
     }
 
 

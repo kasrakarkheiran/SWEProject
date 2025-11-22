@@ -51,6 +51,23 @@ const updateAccount = async (req, res) => {
     res.json(data);
 }
 
+const updateEvents = async (req, res) => {
+    let db = database.getDatabase();
+    let objEvents = {
+        $set: {
+            events: req.body.events
+        }
+    };
+    try{
+        let user = await db.collection("accounts").findOne({email: req.params.email});
+        let data = await db.collection("accounts").updateOne( { _id: new objectId(user._id) }, objEvents );
+        res.json(data);
+    }catch(error){
+        console.error("This code is not working: ", error);
+        throw error;
+    }
+}
+
 // delete account
 const deleteAccount = async (req, res) => {
     let db = database.getDatabase();
@@ -65,4 +82,5 @@ module.exports = {
     getAllAccounts,
     deleteAccount,
     updateAccount,
+    updateEvents,
 }
