@@ -18,14 +18,14 @@ export async function createAccount(accountObject){
     return response;
 }
 
-export async function deleteAccount(id){
-    const response = await axios.delete(`${URL}/accounts/delete/${id}`);
+export async function deleteAccount(email){
+    const response = await axios.delete(`${URL}/accounts/delete/${email.toString()}`);
     return response;
 }
 
-export async function getOneAccount(id)
+export async function getOneAccount(email)
 {
-    const response = await axios.get(`${URL}/accounts/${id}`);
+    const response = await axios.get(`${URL}/accounts/${email.toString()}`);
     if (response.status === 200) {
         return response.data;
     }
@@ -34,9 +34,9 @@ export async function getOneAccount(id)
     }
 }
 
-export async function updateAccount(id, accountObject)
+export async function updateAccount(email, accountObject)
 {
-    const response = await axios.put(`${URL}/accounts/update/${id}`, accountObject);
+    const response = await axios.put(`${URL}/accounts/update/${email.toString()}`, accountObject);
     return response;
 }
 
