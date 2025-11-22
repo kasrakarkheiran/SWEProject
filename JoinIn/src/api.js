@@ -40,8 +40,16 @@ export async function updateAccount(id, accountObject)
     return response;
 }
 
-
-//wadadwawdawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+export async function updateEvents(email, events)
+{
+    try{
+        const response = await axios.patch(`${URL}/accounts/uevents/${email.toString()}`, { events: events });
+        return response;
+    }catch(error){
+        console.error("Error Updating Events: " , error);
+        throw error;
+    }
+}
 
 export async function getFilteredPosts(queryParams){
     try {
