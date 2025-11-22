@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import {useSignup} from "../hooks/useSignup.jsx"
-
+import { Link } from 'react-router-dom'
+import { UserPlus } from 'lucide-react'
+import '../styles/signup.css'
 
 export function Signup() {
     const [name, setName]= useState('')
@@ -17,31 +19,100 @@ export function Signup() {
 
 
     return (
-        <form className="signup" onSubmit={handleSubmit}  >
-            <h3>Sign up</h3>
+        <div className="signup-container">
+            <div className="signup-box">
+                <div className="signup-header">
+                <div className="signup-icon">
+                    <UserPlus size={32} />
+                </div>
+                <h1 className="signup-title">Join PlayTogether</h1>
+                <p className="signup-subtitle">Create your account to start playing</p>
+                </div>
 
-            <label>Name:</label>
-            <input 
-                type="name" 
-                onChange={(e) => setName(e.target.value)} 
-                value={name}
-            />
-            <label>Email:</label>
-            <input 
-                type="email" 
-                onChange={(e) => setEmail(e.target.value)} 
-                value={email}
-            />
-            <label>Password:</label>
-            <input 
-                type="password" 
-                onChange={(e) => setPassword(e.target.value)} 
-                value={password}
-            />
+                <form onSubmit={handleSubmit} className="signup-form">
+                <div className="form-group">
+                    <label htmlFor="name" className="form-label">
+                    Full Name
+                    </label>
+                    <input
+                    id="name"
+                    type="text"
+                    className="form-input"
+                    placeholder="John Doe"
+                    onChange={(e) => setName(e.target.value)}
+                    value={name}
+                    required
+                    />
+                </div>
 
-            <button disabled={isLoading}>Sign up</button>
-            {error && <div className="error">{error}</div>}
-        </form>
+                <div className="form-group">
+                    <label htmlFor="email" className="form-label">
+                    Email Address
+                    </label>
+                    <input
+                    id="email"
+                    type="email"
+                    className="form-input"
+                    placeholder="your@email.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="password" className="form-label">
+                    Password
+                    </label>
+                    <input
+                    id="password"
+                    type="password"
+                    className="form-input"
+                    placeholder="Create a strong password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    required
+                    />
+                    <p className="password-hint">Minimum 6 characters recommended</p>
+                </div>
+
+                {error && (
+                    <div className="error-message">
+                    <span className="error-icon">⚠</span>
+                    <span>{error}</span>
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    className="btn-signup"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Creating account...' : 'Create Account'}
+                </button>
+                </form>
+
+                <div className="signup-divider">
+                <span>Already have an account?</span>
+                </div>
+
+                <Link to="/login" className="btn-login-link">
+                Log in instead
+                </Link>
+
+                <div className="signup-footer">
+                <Link to="/home" className="footer-link">
+                    Back to home
+                </Link>
+                </div>
+            </div>
+
+            <div className="signup-background">
+                <div className="background-shape shape-1"></div>
+                <div className="background-shape shape-2"></div>
+                <div className="background-shape shape-3"></div>
+            </div>
+        </div>
     )
 }
 
