@@ -1,3 +1,4 @@
+const { ReturnDocument } = require('mongodb');
 const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
 
@@ -59,9 +60,9 @@ const updateEvents = async (req, res) => {
         }
     };
     try{
-        let user = await db.collection("accounts").findOne({email: req.params.email});
-        let data = await db.collection("accounts").updateOne( { _id: new objectId(user._id) }, objEvents );
-        res.json(data);
+        let updatedUser = await db.collection("accounts").findOneAndUpdate({email: req.params.email},objEvents,{ReturnDocument: "after"});
+        
+        res.status(200).json(updatedUser);
     }catch(error){
         console.error("This code is not working: ", error);
         throw error;
