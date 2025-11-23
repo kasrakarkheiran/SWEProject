@@ -62,7 +62,7 @@ const updateEvents = async (req, res) => {
     try{
         let updatedUser = await db.collection("accounts").findOneAndUpdate({email: req.params.email},objEvents,{ReturnDocument: "after"});
         
-        res.status(200).json(updatedUser.value);
+        res.status(200).json(updatedUser);
     }catch(error){
         console.error("This code is not working: ", error);
         throw error;

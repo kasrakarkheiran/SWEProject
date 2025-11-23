@@ -3,11 +3,13 @@ import {useAuthContext} from "../hooks/useAuthContext";
 import React, { useState } from 'react';
 import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
+import { PostCard } from "../components/PostCard";
 import '../styles/profile.css';
+import { useEffect } from "react";
 
 
 export function Profile() {
-  const {user} = useAuthContext();
+  const {user, dispatch} = useAuthContext();
   const [activeTab, setActiveTab] = useState('account');
   const [formData, setFormData] = useState({
     title: '',
@@ -15,6 +17,16 @@ export function Profile() {
     eventDate: '',
     category: ''
   });
+
+  const [subscribed, setSubscribed] = useState([]);
+  const [events, setEvents] = useState([]);
+  useEffect(()=>{
+    async function eventSetter(){
+      setEvents(user.events);
+    }
+    eventSetter();
+  })
+
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -95,11 +107,11 @@ export function Profile() {
                   <div className="account-info-grid">
                     <div className="account-field">
                       <label className="field-label">Email</label>
-                      <p className="field-value">user@example.com</p>
+                      <p className="field-value">{user.email}</p>
                     </div>
                     <div className="account-field">
                       <label className="field-label">Username</label>
-                      <p className="field-value">John Doe</p>
+                      <p className="field-value">{user.name}</p>
                     </div>
                     <div className="account-field">
                       <label className="field-label">Member Since</label>
@@ -120,24 +132,8 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">My Events</h2>
                 <div className="events-grid">
-                  <div className="event-card">
-                    <div className="event-header">
-                      <h3 className="event-title">Basketball Game</h3>
-                      <span className="event-badge">Upcoming</span>
-                    </div>
-                    <p className="event-info">📍 Central Park</p>
-                    <p className="event-info">📅 March 15, 2025</p>
-                    <p className="event-participants">👥 8 people joined</p>
-                  </div>
-                  <div className="event-card">
-                    <div className="event-header">
-                      <h3 className="event-title">Soccer Match</h3>
-                      <span className="event-badge">Upcoming</span>
-                    </div>
-                    <p className="event-info">📍 Downtown Field</p>
-                    <p className="event-info">📅 March 18, 2025</p>
-                    <p className="event-participants">👥 12 people joined</p>
-                  </div>
+                  {//EVENTS GO HERE
+                  }
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">
