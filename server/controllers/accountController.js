@@ -100,11 +100,24 @@ const deleteAccount = async (req, res) => {
     res.json(data);
 }
 
-const getUserEvents = async (req, res) => {
+const getSubscribedEvents = async (req, res) => {
   const db = database.getDatabase();
   const user = await db.collection("accounts").findOne({ email: req.params.email });
 
   const eventIds = user.events.map(id => new objectId(id));
+
+  const events = await db.collection("posts").find({
+    _id: { $in: eventIds }
+  }).toArray();
+
+  res.json(events);
+};
+
+const getUserEvents = async (req, res) => {
+  const db = database.getDatabase();
+  const user = await db.collection("accounts").findOne({ email: req.params.email });
+
+  const eventIds = user.myEvents.map(id => new objectId(id));
 
   const events = await db.collection("posts").find({
     _id: { $in: eventIds }
@@ -121,6 +134,7 @@ module.exports = {
     deleteAccount,
     updateAccount,
     updateEvents,
+    getSubscribedEvents,
     getUserEvents,
     getMe
 }

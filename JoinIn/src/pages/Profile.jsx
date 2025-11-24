@@ -5,9 +5,10 @@ import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
 import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
+import { MyEventCard } from "../components/myEventsCard";
 import '../styles/profile.css';
 import { useEffect } from "react";
-import { getSubscribedEvents, createPost } from "../api";
+import { getSubscribedEvents, createPost, getMyEvents } from "../api";
 
 
 export function Profile() {
@@ -43,6 +44,29 @@ export function Profile() {
       }
     }
     subscribeSetter();
+    return () => {
+      mounted = false;
+    };
+  },[user?.email])
+  
+  useEffect(()=>{
+    if(!user?.email){
+      setEvents([]);
+      return;
+    }
+
+    let mounted = true;
+    async function eventSetter(){
+      try {
+        const response = await getMyEvents(user.email);
+        if(mounted){
+          setEvents(response || []);
+        }
+      } catch(err){
+        console.error("Failed fetching subscribed events: ", err);
+      }
+    }
+    eventSetter();
     return () => {
       mounted = false;
     };
@@ -201,8 +225,13 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">My Events</h2>
                 <div className="events-grid">
-                  {//EVENTS GO HERE
-                  }
+                  {events.map((post) => (
+                      <div key={post._id} className="post-item">
+                        <MyEventCard event={post} onDelete={() => {
+                          setEvents(prev => prev.filter(p => p._id !== post._id));
+                        }} />
+                      </div>
+                      ))}
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">

@@ -74,6 +74,16 @@ export async function getSubscribedEvents(email){
 }
 
 
+export async function getMyEvents(email){
+    try{
+        const response = await axios.get(`${URL}/accounts/myEvents/${email.toString()}`)
+        return response.data;
+    }catch(err){
+        console.log("fetching User events error: ", err);
+        throw err;
+    }
+}
+
 
 export async function getFilteredPosts(queryParams){
     try {
