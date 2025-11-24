@@ -9,6 +9,9 @@ export const SubscribedEventCard = ({event, onLeave}) => {
     const{ user, dispatch} = useAuthContext();
     const [loading, setLoading] = useState(false);
 
+    // check if current user is the event creator
+    const isEventHost = user.myEvents.indexOf(event._id) !== -1;
+
     async function handleLeave(id){
         setLoading(true);
         try{
@@ -51,13 +54,17 @@ export const SubscribedEventCard = ({event, onLeave}) => {
       <p className="subscribed-info">📅 {new Date(event.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
       <p className="subscribed-category">🏷️ {event.category}</p>
       <p className="subscribed-participants">👥 {event.participants?.length || 0} people joined</p>
-      <button 
-        className="btn-leave" 
-        onClick={() => handleLeave(event._id)}
-        disabled={loading}
-      >
-        {loading ? 'Leaving...' : 'Leave Event'}
-      </button>
+      {isEventHost ? (
+        <p className="host-message">You are the event host</p>
+      ) : (
+        <button 
+          className="btn-leave" 
+          onClick={() => handleLeave(event._id)}
+          disabled={loading}
+        >
+          {loading ? 'Leaving...' : 'Leave Event'}
+        </button>
+      )}
     </div>
   );
 }

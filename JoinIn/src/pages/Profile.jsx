@@ -6,6 +6,8 @@ import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
 import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
 import { MyEventCard } from "../components/myEventsCard";
+import { PostDetailsModal } from "../components/PostDetailsModal";
+import { EditEventModal } from "../components/EditEventModal";
 import '../styles/profile.css';
 import { useEffect } from "react";
 import { getSubscribedEvents, createPost, getMyEvents, deletePost } from "../api";
@@ -14,6 +16,10 @@ import { getSubscribedEvents, createPost, getMyEvents, deletePost } from "../api
 export function Profile() {
   const {user, dispatch} = useAuthContext();
   const [activeTab, setActiveTab] = useState('account');
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -27,6 +33,7 @@ export function Profile() {
   const [events, setEvents] = useState([]);
 
   useEffect(()=>{
+    // re-run whenever user object changes (email or their events/subscriptions change)
     if(!user?.email){
       setSubscribed([]);
       return;
@@ -47,9 +54,10 @@ export function Profile() {
     return () => {
       mounted = false;
     };
-  },[user?.email])
+  },[user])
   
   useEffect(()=>{
+    // re-run whenever user changes to pick up new/removed my events without a manual refresh
     if(!user?.email){
       setEvents([]);
       return;
@@ -70,7 +78,7 @@ export function Profile() {
     return () => {
       mounted = false;
     };
-  },[user?.email])
+  },[user])
 
 
   const handleFormChange = (e) => {
@@ -123,6 +131,8 @@ export function Profile() {
         // update local `events` state so My Events shows the newly created event immediately
         if (created) {
           setEvents(prev => Array.isArray(prev) ? [...prev, created] : [created]);
+          // if creator is automatically a participant, also add to subscribed list so "Subscribed" tab shows it
+          setSubscribed(prev => Array.isArray(prev) ? [...prev, created] : [created]);
         }
 
         // clear form
@@ -231,32 +241,46 @@ export function Profile() {
                 <h2 className="tab-title">My Events</h2>
                 <div className="events-grid">
                   {events.map((post) => (
-                      <div key={post._id} className="post-item">
-                        <MyEventCard event={post} onDelete={async () => {
-                          try{
-                            // call backend to delete post and remove references
-                            const res = await deletePost(post._id);
-                            if (res && (res.status === 200 || res.status === 202 || res.status === 204)){
-                              // remove from local events list
-                              setEvents(prev => prev.filter(p => p._id !== post._id));
+                      <div key={post._id} className="post-item" onClick={() => {
+                        setSelectedPost(post);
+                        setIsModalOpen(true);
+                      }}>
+                        <MyEventCard 
+                          event={post}
+                          onEdit={(id) => {
+                            const postToEdit = events.find(p => p._id === id);
+                            setEditingPost(postToEdit);
+                            setIsEditModalOpen(true);
+                          }}
+                          onDelete={async () => {
+                            try{
+                              // call backend to delete post and remove references
+                              const res = await deletePost(post._id);
+                              if (res && (res.status === 200 || res.status === 202 || res.status === 204)){
+                                // remove from local events list
+                                setEvents(prev => prev.filter(p => p._id !== post._id));
 
-                              // remove from current user context arrays and localStorage
-                              const updatedUser = {
-                                ...user,
-                                events: (user.events || []).filter(id => id !== post._id),
-                                myEvents: (user.myEvents || []).filter(id => id !== post._id)
-                              };
-                              dispatch({ type: 'UPDATE_USER', payload: updatedUser });
-                              localStorage.setItem('user', JSON.stringify(updatedUser));
-                            } else {
-                              console.error('Failed to delete post', res);
-                              alert('Failed to delete event');
+                                // also remove from subscribed list so subscribed tab is in sync
+                                setSubscribed(prev => prev.filter(p => p._id !== post._id));
+
+                                // remove from current user context arrays and localStorage
+                                const updatedUser = {
+                                  ...user,
+                                  events: (user.events || []).filter(id => id !== post._id),
+                                  myEvents: (user.myEvents || []).filter(id => id !== post._id)
+                                };
+                                dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+                                localStorage.setItem('user', JSON.stringify(updatedUser));
+                              } else {
+                                console.error('Failed to delete post', res);
+                                alert('Failed to delete event');
+                              }
+                            }catch(err){
+                              console.error('Delete event error', err);
+                              alert('Error deleting event');
                             }
-                          }catch(err){
-                            console.error('Delete event error', err);
-                            alert('Error deleting event');
-                          }
-                        }} />
+                          }} 
+                        />
                       </div>
                       ))}
                 </div>
@@ -377,7 +401,10 @@ export function Profile() {
                 <h2 className="tab-title">Subscribed Events</h2>
                 <div className="events-grid">
                     {subscribed.map((post) => (
-                      <div key={post._id} className="post-item">
+                      <div key={post._id} className="post-item" onClick={() => {
+                        setSelectedPost(post);
+                        setIsModalOpen(true);
+                      }}>
                         <SubscribedEventCard event={post} onLeave={() => {
                           setSubscribed(prev => prev.filter(p => p._id !== post._id));
                         }} />
@@ -392,6 +419,18 @@ export function Profile() {
             )}
           </div>
         </div>
+
+        <PostDetailsModal post={selectedPost} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={user} />
+        <EditEventModal 
+          post={editingPost} 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={(updatedPost) => {
+            // Update the event in the local events list
+            setEvents(prev => prev.map(p => p._id === updatedPost._id ? updatedPost : p));
+            alert('Event updated successfully');
+          }}
+        />
       </div>
     </div>
   );

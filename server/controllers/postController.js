@@ -119,19 +119,35 @@ const getAllPosts = async (request, response) => {
 // update a post
 const updatePost = async (request, response) => {
     let db = database.getDatabase();
+    
+    // Build update object only with fields that are provided
+    let updateFields = {};
+    
+    if (request.body.title !== undefined) updateFields.title = request.body.title;
+    if (request.body.description !== undefined) updateFields.description = request.body.description;
+    if (request.body.content !== undefined) updateFields.content = request.body.content;
+    if (request.body.author !== undefined) updateFields.author = request.body.author;
+    if (request.body.category !== undefined) updateFields.category = request.body.category;
+    if (request.body.eventDate !== undefined) updateFields.eventDate = request.body.eventDate ? new Date(request.body.eventDate) : null;
+    if (request.body.dateCreated !== undefined) updateFields.dateCreated = request.body.dateCreated;
+    if (request.body.location !== undefined) updateFields.location = request.body.location;
+    if (request.body.capacity !== undefined) updateFields.capacity = request.body.capacity;
+    if (request.body.participants !== undefined) updateFields.participants = request.body.participants;
+    
     let mongoObj = {
-        $set: {
-            title : request.body.title,
-            description: request.body.description,
-            content : request.body.content,
-            author : request.body.author,
-            category: request.body.category,
-            eventDate: request.body.eventDate,
-            dateCreated : request.body.dateCreated
-        }
+        $set: updateFields
     };
-    let data = await db.collection('posts').updateOne({ _id: new objectId(request.params.id) } , mongoObj);
-    response.json(data);
+    
+    try {
+        let data = await db.collection('posts').updateOne({ _id: new objectId(request.params.id) }, mongoObj);
+        
+        // Return the updated document
+        const updated = await db.collection('posts').findOne({ _id: new objectId(request.params.id) });
+        response.json(updated);
+    } catch (err) {
+        console.error('Update post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 // delete a post

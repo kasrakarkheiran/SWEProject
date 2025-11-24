@@ -17,14 +17,20 @@ export const MyEventCard = ({ event, onEdit, onDelete, loading = false }) => {
       <div className="my-event-actions">
         <button 
           className="btn-edit" 
-          onClick={() => onEdit(event._id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(event._id);
+          }}
           disabled={loading}
         >
           {loading ? 'Editing...' : 'Edit'}
         </button>
         <button 
           className="btn-delete" 
-          onClick={() => onDelete(event._id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(event._id);
+          }}
           disabled={loading}
         >
           {loading ? 'Deleting...' : 'Delete'}
