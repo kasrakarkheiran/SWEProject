@@ -120,6 +120,11 @@ export function Profile() {
           localStorage.setItem('user', JSON.stringify(updatedUser));
         }
 
+        // update local `events` state so My Events shows the newly created event immediately
+        if (created) {
+          setEvents(prev => Array.isArray(prev) ? [...prev, created] : [created]);
+        }
+
         // clear form
         setFormData({
           title: '',
