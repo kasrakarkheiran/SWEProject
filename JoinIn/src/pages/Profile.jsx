@@ -17,7 +17,9 @@ export function Profile() {
     title: '',
     description: '',
     eventDate: '',
-    category: ''
+    category: '',
+    location: '',
+    capacity: ''
   });
 
   const [subscribed, setSubscribed] = useState([]);
@@ -63,7 +65,9 @@ export function Profile() {
       title: '',
       description: '',
       eventDate: '',
-      category: ''
+      category: '',
+      location: '',
+      capacity: ''
     });
   };
 
@@ -229,6 +233,33 @@ export function Profile() {
                         onChange={handleFormChange}
                         className="form-input"
                         required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="location" className="form-label">Location</label>
+                      <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleFormChange}
+                        className="form-input"
+                        placeholder="e.g., Community Park"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="capacity" className="form-label">Capacity</label>
+                      <input
+                        type="number"
+                        id="capacity"
+                        name="capacity"
+                        value={formData.capacity}
+                        onChange={handleFormChange}
+                        className="form-input"
+                        min="1"
+                        placeholder="Max participants"
                       />
                     </div>
                   </div>
