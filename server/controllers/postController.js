@@ -15,11 +15,14 @@ const createPost = async (request, response) => {
     let mongoObj = {
         title : request.body.title,
         description: request.body.description,
-        content : request.body.content,
         author : request.body.author,
         category: request.body.category,
-        eventDate: request.body.eventDate,
-        dateCreated : request.body.dateCreated
+        // convert incoming date strings to Date objects to ensure correct type in DB
+        eventDate: request.body.eventDate ? new Date(request.body.eventDate) : null,
+        dateCreated : request.body.dateCreated ? new Date(request.body.dateCreated) : new Date(),
+        location: request.body.location || null,
+        capacity: request.body.capacity ? Number(request.body.capacity) : null,
+        participants: request.body.participants || []
     };
     let data = await db.collection('posts').insertOne(mongoObj);
     response.json(data);
@@ -32,9 +35,12 @@ const getFilteredPosts = async (request, response) => {
     let db = database.getDatabase();
     let query = {};
 
-    // Filter by category if provided
+    // Filter by category if provided (case-insensitive)
     if (request.query.category && request.query.category !== '') {
-        query.category = request.query.category;
+        // escape special regex chars from input
+        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const cat = request.query.category;
+        query.category = { $regex: new RegExp(`^${escapeRegExp(cat)}$`, 'i') };
     }
 
     // Filter by event date range if provided

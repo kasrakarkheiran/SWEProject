@@ -7,7 +7,7 @@ import { PostCard } from "../components/PostCard";
 import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
 import '../styles/profile.css';
 import { useEffect } from "react";
-import { getSubscribedEvents } from "../api";
+import { getSubscribedEvents, createPost } from "../api";
 
 
 export function Profile() {
@@ -57,18 +57,45 @@ export function Profile() {
     }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log('Event Created:', formData);
-    // Add your API call here to create event
-    setFormData({
-      title: '',
-      description: '',
-      eventDate: '',
-      category: '',
-      location: '',
-      capacity: ''
-    });
+    if (!user) return alert('You must be logged in to create an event');
+
+    const post = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      // convert date-string (from <input type="date">) to an ISO date string; server converts to Date
+      eventDate: formData.eventDate ? new Date(formData.eventDate) : null,
+      dateCreated: new Date(),
+      author: user.name,
+      location: formData.location || null,
+      capacity: formData.capacity ? Number(formData.capacity) : null,
+      participants: []
+    };
+
+    try{
+      const res = await createPost(post);
+      // axios returns a response object; success if status in 200s
+      if (res && res.status >= 200 && res.status < 300) {
+        // clear form
+        setFormData({
+          title: '',
+          description: '',
+          eventDate: '',
+          category: '',
+          location: '',
+          capacity: ''
+        });
+        console.log('Event created', res.data);
+      } else {
+        console.error('Create post failed', res);
+        alert('Failed to create event');
+      }
+    }catch(err){
+      console.error('Error creating post', err);
+      alert('Error creating event');
+    }
   };
 
   return (
