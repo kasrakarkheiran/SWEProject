@@ -15,7 +15,7 @@ function App() {
   //Home
   //Profle
 
-  const {user} = useAuthContext()
+  const {user,dispatch} = useAuthContext()
 
   return (
     <BrowserRouter>

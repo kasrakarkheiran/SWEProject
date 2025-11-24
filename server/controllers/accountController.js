@@ -1,7 +1,24 @@
+const { ReturnDocument } = require('mongodb');
 const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
 
 const { createAccountInDb } = require('../services/accountService');
+
+
+
+
+const getMe = async (req, res) => {
+    try {
+    let db = database.getDatabase()
+    // Expecting route: /me/:email
+    const emailParam = req.params.email || req.params.id;
+    const user = await db.collection('accounts').findOne({ email: emailParam });
+        if (!user) return res.status(404).json({ error: "user not found" });
+        res.json(user);
+    } catch (err) {
+        res.status(400).json(err)
+    } 
+}
 
 // create account using service function (used by authcontroller too)
 const createAccount = async (req, res) => {
@@ -18,12 +35,15 @@ const createAccount = async (req, res) => {
 // get one account
 const getOneAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').findOne({ _id: new objectId(req.params.id) });
-    //check if accounts exists or not
-    if (Object.keys(data).length > 0){
+    try{
+        // route uses '/accounts/:id' so the param is named 'id' (which contains the email)
+        const emailParam = req.params.email || req.params.id;
+        let data = await db.collection('accounts').findOne({ email: emailParam });
+        //check if accounts exists or not
         res.json(data);
     }
-    else{
+    catch(error){
+        console.log("Account error: ", error);
         throw new Error("Account not found");
     }
 }
@@ -47,7 +67,7 @@ const updateAccount = async (req, res) => {
             dateCreated: req.body.dateCreated
         }
     };
-    let data = await db.collection('accounts').updateOne({ _id: new objectId(req.params.id) } , mongoObj);
+    let data = await db.collection('accounts').updateOne({ email: req.params.email} , mongoObj);
     res.json(data);
 }
 
@@ -59,9 +79,14 @@ const updateEvents = async (req, res) => {
         }
     };
     try{
-        let user = await db.collection("accounts").findOne({email: req.params.email});
-        let data = await db.collection("accounts").updateOne( { _id: new objectId(user._id) }, objEvents );
-        res.json(data);
+        // use correct option name and return the updated document value
+        let result = await db.collection("accounts").findOneAndUpdate(
+            { email: req.params.email },
+            objEvents,
+            { returnDocument: "after" }
+        );
+
+        res.status(200).json(result.value);
     }catch(error){
         console.error("This code is not working: ", error);
         throw error;
@@ -71,9 +96,22 @@ const updateEvents = async (req, res) => {
 // delete account
 const deleteAccount = async (req, res) => {
     let db = database.getDatabase();
-    let data = await db.collection('accounts').deleteOne({ _id: new objectId(req.params.id) });
+    let data = await db.collection('accounts').deleteOne({ email: new objectId(req.params.id) });
     res.json(data);
 }
+
+const getUserEvents = async (req, res) => {
+  const db = database.getDatabase();
+  const user = await db.collection("accounts").findOne({ email: req.params.email });
+
+  const eventIds = user.events.map(id => new objectId(id));
+
+  const events = await db.collection("posts").find({
+    _id: { $in: eventIds }
+  }).toArray();
+
+  res.json(events);
+};
 
 
 module.exports = {
@@ -83,4 +121,6 @@ module.exports = {
     deleteAccount,
     updateAccount,
     updateEvents,
+    getUserEvents,
+    getMe
 }

@@ -13,12 +13,12 @@ export function Landing() {
         
         <div className="landing-container">
       {/* Navigation */}
-      <nav className="navbar">
-        <div className="navbar-content">
-          <div className="navbar-brand">JoinIn</div>
-          <div className="navbar-buttons">
-            <button className="btn-login"><Link to="/login">Log In</Link></button>
-            <button className="btn-signup"><Link to="/signup">Sign Up</Link></button>
+      <nav className="navbar-landing">
+        <div className="landing-navbar-content">
+          <div className="landing-navbar-brand">JoinIn</div>
+          <div className="landing-navbar-buttons">
+            <button className="landing-btn-login"><Link to="/login" className="landing-link">Log In</Link></button>
+            <button className="landing-btn-signup"><Link to="/signup" className="landing-link">Sign Up</Link></button>
           </div>
         </div>
       </nav>
