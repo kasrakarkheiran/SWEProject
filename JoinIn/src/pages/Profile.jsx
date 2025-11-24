@@ -69,6 +69,8 @@ export function Profile() {
       eventDate: formData.eventDate ? new Date(formData.eventDate) : null,
       dateCreated: new Date(),
       author: user.name,
+      // include creator email so server can update the account document
+      creatorEmail: user.email,
       location: formData.location || null,
       capacity: formData.capacity ? Number(formData.capacity) : null,
       participants: []
@@ -78,6 +80,22 @@ export function Profile() {
       const res = await createPost(post);
       // axios returns a response object; success if status in 200s
       if (res && res.status >= 200 && res.status < 300) {
+        // server returned created post document
+        const created = res.data;
+
+        // optimistic update: add new post id to local user context so UI updates immediately
+        const newId = created && (created._id || created.insertedId);
+        if (newId) {
+          const idStr = typeof newId === 'string' ? newId : newId.toString();
+          const updatedUser = {
+            ...user,
+            events: Array.isArray(user?.events) ? [...user.events, idStr] : [idStr],
+            myEvents: Array.isArray(user?.myEvents) ? [...user.myEvents, idStr] : [idStr]
+          };
+          dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+
         // clear form
         setFormData({
           title: '',
@@ -87,7 +105,8 @@ export function Profile() {
           location: '',
           capacity: ''
         });
-        console.log('Event created', res.data);
+
+        console.log('Event created', created);
       } else {
         console.error('Create post failed', res);
         alert('Failed to create event');

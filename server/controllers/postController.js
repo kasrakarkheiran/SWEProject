@@ -11,21 +11,44 @@ const objectId = require('mongodb').ObjectId;
 
 // create a new post
 const createPost = async (request, response) => {
-    let db = database.getDatabase();
-    let mongoObj = {
-        title : request.body.title,
-        description: request.body.description,
-        author : request.body.author,
-        category: request.body.category,
-        // convert incoming date strings to Date objects to ensure correct type in DB
-        eventDate: request.body.eventDate ? new Date(request.body.eventDate) : null,
-        dateCreated : request.body.dateCreated ? new Date(request.body.dateCreated) : new Date(),
-        location: request.body.location || null,
-        capacity: request.body.capacity ? Number(request.body.capacity) : null,
-        participants: request.body.participants || []
-    };
-    let data = await db.collection('posts').insertOne(mongoObj);
-    response.json(data);
+    const db = database.getDatabase();
+    try {
+        const authorName = request.body.author;
+        const creatorEmail = request.body.creatorEmail || request.body.authorEmail || null;
+
+        const mongoObj = {
+            title: request.body.title,
+            description: request.body.description,
+            author: authorName,
+            category: request.body.category,
+            // convert incoming date strings to Date objects to ensure correct type in DB
+            eventDate: request.body.eventDate ? new Date(request.body.eventDate) : null,
+            dateCreated: request.body.dateCreated ? new Date(request.body.dateCreated) : new Date(),
+            location: request.body.location || null,
+            capacity: request.body.capacity ? Number(request.body.capacity) : null,
+            participants: authorName ? [authorName] : (request.body.participants || [])
+        };
+
+        const result = await db.collection('posts').insertOne(mongoObj);
+
+        // inserted id as string for storing in user documents
+        const insertedIdStr = result.insertedId.toString();
+
+        // If we have a creator identifier (email), add the post id to their events/myEvents arrays
+        if (creatorEmail) {
+            await db.collection('accounts').updateOne(
+                { email: creatorEmail },
+                { $addToSet: { events: insertedIdStr, myEvents: insertedIdStr } }
+            );
+        }
+
+        // return the created post document
+        const inserted = await db.collection('posts').findOne({ _id: result.insertedId });
+        response.status(201).json(inserted);
+    } catch (err) {
+        console.error('Create post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 
