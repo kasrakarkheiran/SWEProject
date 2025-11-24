@@ -8,7 +8,7 @@ import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
 import { MyEventCard } from "../components/myEventsCard";
 import '../styles/profile.css';
 import { useEffect } from "react";
-import { getSubscribedEvents, createPost, getMyEvents } from "../api";
+import { getSubscribedEvents, createPost, getMyEvents, deletePost } from "../api";
 
 
 export function Profile() {
@@ -227,8 +227,30 @@ export function Profile() {
                 <div className="events-grid">
                   {events.map((post) => (
                       <div key={post._id} className="post-item">
-                        <MyEventCard event={post} onDelete={() => {
-                          setEvents(prev => prev.filter(p => p._id !== post._id));
+                        <MyEventCard event={post} onDelete={async () => {
+                          try{
+                            // call backend to delete post and remove references
+                            const res = await deletePost(post._id);
+                            if (res && (res.status === 200 || res.status === 202 || res.status === 204)){
+                              // remove from local events list
+                              setEvents(prev => prev.filter(p => p._id !== post._id));
+
+                              // remove from current user context arrays and localStorage
+                              const updatedUser = {
+                                ...user,
+                                events: (user.events || []).filter(id => id !== post._id),
+                                myEvents: (user.myEvents || []).filter(id => id !== post._id)
+                              };
+                              dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+                              localStorage.setItem('user', JSON.stringify(updatedUser));
+                            } else {
+                              console.error('Failed to delete post', res);
+                              alert('Failed to delete event');
+                            }
+                          }catch(err){
+                            console.error('Delete event error', err);
+                            alert('Error deleting event');
+                          }
                         }} />
                       </div>
                       ))}

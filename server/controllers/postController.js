@@ -136,9 +136,22 @@ const updatePost = async (request, response) => {
 
 // delete a post
 const deletePost = async (request, response) => {
-    let db = database.getDatabase();
-    let data = await db.collection('posts').deleteOne({ _id: new objectId(request.params.id) });
-    response.json(data);
+    const db = database.getDatabase();
+    try{
+        const id = request.params.id;
+        const oid = new objectId(id);
+
+        // remove references to this post id from all user documents (events & myEvents)
+        const postIdStr = id.toString();
+        await db.collection('accounts').updateMany({}, { $pull: { events: postIdStr, myEvents: postIdStr } });
+
+        // delete the post document
+        const result = await db.collection('posts').deleteOne({ _id: oid });
+        response.json(result);
+    }catch(err){
+        console.error('Delete post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 
