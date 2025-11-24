@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
+import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
 import '../styles/profile.css';
 import { useEffect } from "react";
+import { getSubscribedEvents } from "../api";
 
 
 export function Profile() {
@@ -20,12 +22,29 @@ export function Profile() {
 
   const [subscribed, setSubscribed] = useState([]);
   const [events, setEvents] = useState([]);
+
   useEffect(()=>{
-    async function eventSetter(){
-      setEvents(user.events);
+    if(!user?.email){
+      setSubscribed([]);
+      return;
     }
-    eventSetter();
-  })
+
+    let mounted = true;
+    async function subscribeSetter(){
+      try {
+        const response = await getSubscribedEvents(user.email);
+        if(mounted){
+          setSubscribed(response || []);
+        }
+      } catch(err){
+        console.error("Failed fetching subscribed events: ", err);
+      }
+    }
+    subscribeSetter();
+    return () => {
+      mounted = false;
+    };
+  },[user?.email])
 
 
   const handleFormChange = (e) => {
@@ -224,26 +243,11 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">Subscribed Events</h2>
                 <div className="events-grid">
-                  <div className="event-card subscribed">
-                    <div className="event-header">
-                      <h3 className="event-title">Volleyball Game</h3>
-                      <span className="event-badge">Joined</span>
-                    </div>
-                    <p className="event-info">📍 Beach Courts</p>
-                    <p className="event-info">📅 March 16, 2025</p>
-                    <p className="event-participants">👥 6 people attending</p>
-                    <button className="btn-leave">Leave Event</button>
-                  </div>
-                  <div className="event-card subscribed">
-                    <div className="event-header">
-                      <h3 className="event-title">Tennis Match</h3>
-                      <span className="event-badge">Joined</span>
-                    </div>
-                    <p className="event-info">📍 Tennis Court</p>
-                    <p className="event-info">📅 March 20, 2025</p>
-                    <p className="event-participants">👥 4 people attending</p>
-                    <button className="btn-leave">Leave Event</button>
-                  </div>
+                  {subscribed.map((post) => (
+                        <div key={post._id} className="post-item">
+                            <SubscribedEventCard event={post} />
+                        </div>
+                        ))}
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">

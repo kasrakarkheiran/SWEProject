@@ -1,5 +1,5 @@
 import {createContext, useReducer, useEffect} from 'react'
-
+import { getMe } from '../api'
 export const AuthContext = createContext()
 
 
@@ -25,22 +25,26 @@ export const AuthContextProvider = ({children}) => {
         user: null
     })
 
-    // // fire this when the component first renders; makes sure React updates user context when page is refreshed
-    // useEffect(() => {
-    //     const user = JSON.parse(localStorage.getItem('user'))
-
-    //     if (user) {
-    //         dispatch({type: 'LOGIN', payload: user})
-    //     }
-    // }, [])
-    // console.log('AuthContext state: ', state)
-
-    //Sync on first page load
+    //syncing local storage with backend storage
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser){
-            dispatch({type: "LOGIN", payload: storedUser})
+        if (!storedUser){
+            return;
         }
+        dispatch({type: "LOGIN", payload: storedUser})
+
+        async function refresh(){
+            try{
+                const res = await getMe(storedUser.email);
+                console.log("this is res: ", res);
+                const fresh = res;
+                dispatch({type:"LOGIN", payload:fresh})
+                localStorage.setItem("user", JSON.stringify(fresh))
+            }catch(error){
+                console.error("Failed to refresh user: ", error);
+            }
+        }
+        refresh();
     },[]);
     //keeping local storage synced with context whenever user changes
     useEffect(() => {

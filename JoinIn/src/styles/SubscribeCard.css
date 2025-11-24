@@ -1,0 +1,133 @@
+/* Subscribed Card */
+.subscribed-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.subscribed-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.subscribed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.subscribed-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+.subscribed-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subscribed-info {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.subscribed-category {
+  color: #6b7280;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.subscribed-participants {
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 1rem 0 0;
+}
+
+.btn-leave {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-leave:hover:not(:disabled) {
+  background: #fecaca;
+  color: #991b1b;
+  border-color: #ef4444;
+}
+
+.btn-leave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .subscribed-card {
+    padding: 1rem;
+  }
+
+  .subscribed-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .subscribed-title {
+    font-size: 1.125rem;
+  }
+
+  .subscribed-info,
+  .subscribed-category,
+  .subscribed-participants {
+    font-size: 0.875rem;
+  }
+
+  .btn-leave {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .subscribed-card {
+    padding: 0.875rem;
+    border-radius: 0.625rem;
+  }
+
+  .subscribed-title {
+    font-size: 1rem;
+  }
+
+  .subscribed-info,
+  .subscribed-category,
+  .subscribed-participants {
+    font-size: 0.8rem;
+  }
+
+  .btn-leave {
+    padding: 0.625rem;
+    font-size: 0.8rem;
+  }
+}
