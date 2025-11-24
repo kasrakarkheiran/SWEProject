@@ -96,10 +96,10 @@ const PostForm = () => {
                 value={category}
                 onChange={(e)=> setCategory(e.target.value)}
                 >
-                <option value="soccer">Soccer</option>
-                <option value="football">Football</option>
-                <option value="tag">Tag</option>
-                <option value="wrestling">Wrestling</option>
+                <option value="Soccer">Soccer</option>
+                <option value="Football">Football</option>
+                <option value="Tag">Tag</option>
+                <option value="Wrestling">Wrestling</option>
             </select>
             <button>Add post</button>
             {error && <div className="error">{error}</div>}

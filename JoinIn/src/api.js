@@ -43,6 +43,16 @@ export async function updateAccount(id, accountObject)
 
 //wadadwawdawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 
+export async function getFilteredPosts(queryParams){
+    try {
+        const response = await axios.get(`/posts/filter?${queryParams.toString()}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error Fetching posts:", error);
+        throw error;
+    }
+}
+
 export async function getAllPosts(){
     const response = await axios.get(`${URL}/posts`);
     if (response.status === 200) {
