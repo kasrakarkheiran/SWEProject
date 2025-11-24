@@ -243,11 +243,13 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">Subscribed Events</h2>
                 <div className="events-grid">
-                  {subscribed.map((post) => (
-                        <div key={post._id} className="post-item">
-                            <SubscribedEventCard event={post} />
-                        </div>
-                        ))}
+                    {subscribed.map((post) => (
+                      <div key={post._id} className="post-item">
+                        <SubscribedEventCard event={post} onLeave={() => {
+                          setSubscribed(prev => prev.filter(p => p._id !== post._id));
+                        }} />
+                      </div>
+                      ))}
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">

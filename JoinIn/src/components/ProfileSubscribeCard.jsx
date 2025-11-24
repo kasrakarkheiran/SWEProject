@@ -2,54 +2,44 @@ import { Calendar, Tag, User, Heart } from 'lucide-react';
 import '../styles/SubscribeCard.css';
 import { updateEvents, getOneAccount } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export const SubscribedEventCard = ({event}) => {
+export const SubscribedEventCard = ({event, onLeave}) => {
 
     const{ user, dispatch} = useAuthContext();
     const [loading, setLoading] = useState(false);
 
     async function handleLeave(id){
         setLoading(true);
-        // console.log("user events before: ", user.events);
-        // const events = user.events;
-        // const updatedEvents = events.filter(item => item !== id);
-        // console.log("updated events: ", updatedEvents)
-        // await updateEvents(user.email, updatedEvents);
-
-        // dispatch({type:"UPDATE_USER", payload: user});
-        // localStorage.setItem("user", JSON.stringify(user));
-        // console.log("Updated user: ", user);
         try{
-          const updatedEvents = (user.events || []).filter((e) => e !== id);
+            const events = user?.events || [];
+            const updatedEvents = events.filter(item => item !== id);
 
-          await updateEvents(user.email, updatedEvents)
+            // update backend
+            await updateEvents(user.email, updatedEvents);
 
-          let freshUser;
-          try
-          {
-            freshUser = await getOneAccount(user.email);
-            console.log("FreshUserAttempt")
-          }
-          catch(e)
-          {
-            freshUser = {...user, events: updatedEvents};
-            console.log("FreshUserAttemptError", err)
-          }
+            // Try to fetch fresh user from backend
+            let freshUser;
+            try{
+                freshUser = await getOneAccount(user.email);
+            }catch(err){
+                // fallback to local update if fetch fails
+                freshUser = {...user, events: updatedEvents};
+            }
 
-          dispatch({type: "UPDATED_USER", payload: freshUser})
-          localStorage.setItem("user", JSON.stringify(freshUser));
+            // update global context and localStorage
+            dispatch({type:"UPDATE_USER", payload: freshUser});
+            localStorage.setItem("user", JSON.stringify(freshUser));
 
+            // notify parent (Profile) to remove item from subscribed list so UI updates immediately
+            if (typeof onLeave === 'function') onLeave(id);
+
+        }catch(error){
+            console.error("Failed to leave event: ", error);
+        }finally{
+            setLoading(false);
         }
-        catch(err)
-        {
-          console.error("Failed to leave event: ", err);
-        }
-        finally
-        {
-          setLoading(false);
-        }
-      }
+    }
 
   return (
       <div className="subscribed-card">
