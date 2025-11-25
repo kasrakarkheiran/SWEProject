@@ -1,6 +1,6 @@
 import {useAuthContext} from "../hooks/useAuthContext";
-
-import React, { useState } from 'react';
+import * as api from "../api.js"
+import { useState } from 'react';
 import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
@@ -336,16 +336,16 @@ export function Profile() {
                         required
                       >
                         <option value="">Select a sport</option>
-                        <option value="basketball">Basketball</option>
-                        <option value="soccer">Soccer</option>
-                        <option value="volleyball">Volleyball</option>
-                        <option value="tennis">Tennis</option>
-                        <option value="badminton">Badminton</option>
-                        <option value="frisbee">Frisbee</option>
-                        <option value="pickleball">Pickleball</option>
-                        <option value="cricket">Cricket</option>
-                        <option value="baseball">Baseball</option>
-                        <option value="other">Other</option>
+                        <option value="Basketball">Basketball</option>
+                        <option value="Soccer">Soccer</option>
+                        <option value="Volleyball">Volleyball</option>
+                        <option value="Tennis">Tennis</option>
+                        <option value="Badminton">Badminton</option>
+                        <option value="Frisbee">Frisbee</option>
+                        <option value="Pickleball">Pickleball</option>
+                        <option value="Cricket">Cricket</option>
+                        <option value="Baseball">Baseball</option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
 
