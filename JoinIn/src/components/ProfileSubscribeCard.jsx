@@ -1,6 +1,6 @@
 import { Calendar, Tag, User, Heart } from 'lucide-react';
 import '../styles/SubscribeCard.css';
-import { updateEvents, getOneAccount } from "../api";
+import { updateEvents, getOneAccount, updatePost } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState } from "react";
 
@@ -59,7 +59,9 @@ export const SubscribedEventCard = ({event, onLeave}) => {
       ) : (
         <button 
           className="btn-leave" 
-          onClick={() => handleLeave(event._id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLeave(event._id);}}
           disabled={loading}
         >
           {loading ? 'Leaving...' : 'Leave Event'}
