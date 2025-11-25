@@ -21,6 +21,9 @@ export const SubscribedEventCard = ({event, onLeave}) => {
             // update backend
             await updateEvents(user.email, updatedEvents);
 
+            event.participants = event.participants.filter((name) => name != user.name);
+            updatePost(event._id, event);
+
             // Try to fetch fresh user from backend
             let freshUser;
             try{
