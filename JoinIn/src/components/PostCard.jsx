@@ -8,7 +8,6 @@ export const PostCard = ({post, setAdminDelete}) => {
     const { user, dispatch } = useAuthContext();
     const [loading, setLoading] = useState(false);
 
-
     let isJoined = Boolean(user?.events?.includes(post._id));
 
     async function handleJoin(){
@@ -59,13 +58,14 @@ export const PostCard = ({post, setAdminDelete}) => {
     }
 
     const isAdmin = user.isAdmin;
-
+    console.log(isAdmin)
+    
     async function handleAdminDelete() {
         if (!isAdmin) {
             console.log("Shouldn't have reached here... Aborting function");
             return;
         }
-
+    
         setAdminDelete(isAdmin);
     }
 
