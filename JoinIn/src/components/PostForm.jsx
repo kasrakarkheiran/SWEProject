@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useAuthContext } from "../hooks/useAuthContext"
 import { usePostsContext} from "../hooks/usePostsContext"
 
-
 const PostForm = () => {
     const {dispatch} = usePostsContext()
     const {user} = useAuthContext()
