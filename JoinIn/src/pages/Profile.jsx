@@ -8,6 +8,7 @@ import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
 import { MyEventCard } from "../components/myEventsCard";
 import { PostDetailsModal } from "../components/PostDetailsModal";
 import { EditEventModal } from "../components/EditEventModal";
+import { EditProfileModal } from "../components/editProfileModal";
 import '../styles/profile.css';
 import { useEffect } from "react";
 import { getSubscribedEvents, createPost, getMyEvents, deletePost } from "../api";
@@ -20,6 +21,7 @@ export function Profile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -223,14 +225,18 @@ export function Profile() {
                     </div>
                     <div className="account-field">
                       <label className="field-label">Member Since</label>
-                      <p className="field-value">January 2025</p>
+                      <p className="field-value">
+                        {user.dateCreated
+                          ? new Date(user.dateCreated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                          : 'Date unavailable'}
+                      </p>
                     </div>
                     <div className="account-field">
                       <label className="field-label">Events Created</label>
-                      <p className="field-value">5</p>
+                      <p className="field-value">{user.myEvents.length}</p>
                     </div>
                   </div>
-                  <button className="btn-edit">Edit Profile</button>
+                  <button className="btn-edit" onClick={()=>setIsEditProfileModalOpen(true)}>Edit Profile</button>
                 </div>
               </div>
             )}
@@ -285,9 +291,11 @@ export function Profile() {
                       ))}
                 </div>
                 {/* Placeholder for empty state */}
-                <div className="empty-state">
-                  <p>No events created yet. Start by creating your first event!</p>
-                </div>
+                {events.length === 0 && (
+                  <div className="empty-state">
+                    <p>No events created yet. Start by creating your first event!</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -412,9 +420,11 @@ export function Profile() {
                       ))}
                 </div>
                 {/* Placeholder for empty state */}
-                <div className="empty-state">
-                  <p>You haven't subscribed to any events yet. Go to home to find events!</p>
-                </div>
+                {subscribed.length === 0 && (
+                  <div className="empty-state">
+                    <p>You haven't subscribed to any events yet. Go to home to find events!</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -429,6 +439,21 @@ export function Profile() {
             // Update the event in the local events list
             setEvents(prev => prev.map(p => p._id === updatedPost._id ? updatedPost : p));
             alert('Event updated successfully');
+          }}
+        />
+        <EditProfileModal 
+          user={user}
+          isOpen={isEditProfileModalOpen}
+          onClose={() => setIsEditProfileModalOpen(false)}
+          onSave={(updatedUser) => {
+            // Update the user in context and localStorage
+            const newUser = {
+              ...user,
+              name: updatedUser.name,
+              email: updatedUser.email
+            };
+            dispatch({ type: 'UPDATE_USER', payload: newUser });
+            localStorage.setItem('user', JSON.stringify(newUser));
           }}
         />
       </div>
