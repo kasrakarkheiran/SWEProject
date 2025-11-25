@@ -8,6 +8,9 @@ import {useAuthContext} from '../hooks/useAuthContext'
 import PostForm from "../components/PostForm.jsx"
 import PostDetails from "../components/PostDetails.jsx";
 import { PostCard } from "../components/PostCard.jsx";
+import { Navbar } from "../components/Navbar.jsx";
+import { Search, X, Filter } from 'lucide-react';
+import '../styles/home.css'
 
 export function Home() {
     const {posts, dispatch} = usePostsContext()
@@ -94,122 +97,132 @@ export function Home() {
 
 
     return (
-        <>
-            <PostForm/>
-            <h1>HOME</h1>
-            {/* Filter Section */}
-            <div style={{ 
-                padding: '20px', 
-                border: '1px solid #ddd', 
-                borderRadius: '8px',
-                marginBottom: '20px',
-                backgroundColor: '#f9f9f9'
-            }}>
-                <h3>Filter Posts</h3>
-                
-                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                    
+        <div className="home-container">
+            <Navbar />
+
+            {/* Hero Section */}
+            <section className="home-hero">
+                <div className="hero-content">
+                <h1 className="hero-title">Find Your Next Game</h1>
+                <p className="hero-subtitle">Discover casual sports events near you and join players who want to have fun</p>
+                </div>
+            </section>
+
+            <div className="home-content">
+                {/* Filter Section */}
+                <div className="filters-section">
+                <div className="filters-header">
+                    <h2 className="filters-title">
+                    <Filter size={24} />
+                    Find Events
+                    </h2>
+                    <p className="filters-subtitle">Filter events by sport, date, or both</p>
+                </div>
+
+                <div className="filters-grid">
                     {/* Category Filter */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                            Category
-                        </label>
-                        <select 
-                            value={filters.category}
-                            onChange={handleCategoryChange}
-                            style={{
-                                padding: '8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                fontSize: '14px'
-                            }}
-                        >
-                            <option value="">All Categories</option>
-                            <option value="Basketball">Basketball</option>
-                            <option value="Soccer">Soccer</option>
-                            <option value="Tennis">Tennis</option>
-                            <option value="Volleyball">Volleyball</option>
-                            <option value="Football">Football</option>
-                        </select>
+                    <div className="filter-group">
+                    <label htmlFor="category" className="filter-label">
+                        Sport Category
+                    </label>
+                    <select
+                        id="category"
+                        value={filters.category}
+                        onChange={handleCategoryChange}
+                        className="filter-select"
+                    >
+                        <option value="">All Sports</option>
+                        <option value="Basketball">Basketball</option>
+                        <option value="Soccer">Soccer</option>
+                        <option value="Tennis">Tennis</option>
+                        <option value="Volleyball">Volleyball</option>
+                        <option value="Football">Football</option>
+                        <option value="Badminton">Badminton</option>
+                        <option value="Pickleball">Pickleball</option>
+                        <option value="Cricket">Cricket</option>
+                    </select>
                     </div>
 
                     {/* Event Date Range Filter */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                            Event Date Range
-                        </label>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <input 
-                                type="date"
-                                value={filters.eventStartDate}
-                                onChange={handleStartDateChange}
-                                style={{
-                                    padding: '8px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '4px',
-                                    fontSize: '14px'
-                                }}
-                            />
-                            <span>to</span>
-                            <input 
-                                type="date"
-                                value={filters.eventEndDate}
-                                onChange={handleEndDateChange}
-                                style={{
-                                    padding: '8px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '4px',
-                                    fontSize: '14px'
-                                }}
-                            />
-                        </div>
+                    <div className="filter-group filter-group-span">
+                    <label className="filter-label">
+                        Event Date Range
+                    </label>
+                    <div className="date-range-inputs">
+                        <input
+                        type="date"
+                        value={filters.eventStartDate}
+                        onChange={handleStartDateChange}
+                        className="filter-date-input"
+                        placeholder="Start date"
+                        />
+                        <span className="date-separator">→</span>
+                        <input
+                        type="date"
+                        value={filters.eventEndDate}
+                        onChange={handleEndDateChange}
+                        className="filter-date-input"
+                        placeholder="End date"
+                        />
                     </div>
-
-                    {/* Buttons */}
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button 
-                            onClick={handleApplyFilters}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#007bff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '14px'
-                            }}
-                        >
-                            Apply Filters
-                        </button>
-                        
-                        <button 
-                            onClick={handleClearFilters}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#6c757d',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '14px'
-                            }}
-                        >
-                            Clear Filters
-                        </button>
                     </div>
                 </div>
+
+                {/* Filter Buttons */}
+                <div className="filter-buttons">
+                    <button
+                    onClick={handleApplyFilters}
+                    className="btn-apply-filters"
+                    >
+                    <Search size={18} />
+                    Apply Filters
+                    </button>
+
+                    <button
+                    onClick={handleClearFilters}
+                    className="btn-clear-filters"
+                    >
+                    <X size={18} />
+                    Clear Filters
+                    </button>
+                </div>
+                </div>
+
+                {/* Posts Display Section */}
+                <div className="posts-section">
+                {loading && (
+                    <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading events...</p>
+                    </div>
+                )}
+
+                {!loading && posts.length === 0 && (
+                    <div className="empty-state">
+                    <Search size={48} />
+                    <h3>No Events Found</h3>
+                    <p>Try adjusting your filters to find more casual sports events</p>
+                    </div>
+                )}
+
+                {!loading && posts.length > 0 && (
+                    <>
+                    <div className="posts-header">
+                        <h2 className="posts-title">Available Events</h2>
+                        <p className="posts-count">{posts.length} event{posts.length !== 1 ? 's' : ''} found</p>
+                    </div>
+
+                    <div className="posts-grid">
+                        {posts.map((post) => (
+                        <div key={post._id} className="post-item">
+                            <PostCard post={post} />
+                        </div>
+                        ))}
+                    </div>
+                    </>
+                )}
+                </div>
             </div>
-
-            {/* Posts Display Section */}
-            {loading && <p>Loading posts...</p>}
-            
-            {!loading && posts.length === 0 && (
-                <p>No posts found. Try adjusting your filters.</p>
-            )}
-
-            {!loading && posts && posts.map((post) => {
-                    <PostCard key={post._id} post={post}/>
-            })}
-        </>
+        </div>
     );
 }
