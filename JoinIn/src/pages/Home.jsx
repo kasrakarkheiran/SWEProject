@@ -16,6 +16,7 @@ export function Home() {
     const [loading, setLoading] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [adminDelete, setAdminDelete] = useState(false);
     const [filters, setFilters] = useState({
         category : '',
         eventStartDate : '',
@@ -214,7 +215,7 @@ export function Home() {
                           setSelectedPost(post);
                           setIsModalOpen(true);
                         }}>
-                            <PostCard post={post} />
+                            <PostCard post={post} setAdminDelete={setAdminDelete} />
                         </div>
                         ))}
                     </div>
@@ -222,7 +223,7 @@ export function Home() {
                 )}
                 </div>
 
-                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} adminDelete={adminDelete} onDelete={() => fetchFilteredPosts(null)} onClose={() => setIsModalOpen(false)} />
             </div>
         </div>
     );

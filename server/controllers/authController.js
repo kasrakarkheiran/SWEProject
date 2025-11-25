@@ -18,7 +18,7 @@ const signupUser = async (req, res) => {
         // validates all fields and hashes password
         const hashedPassword = await signupHelper(name, email, password)
 
-        const user = await createAccountInDb(db, {name, email, password: hashedPassword, events: [], myEvents: []});
+        const user = await createAccountInDb(db, {name, email, isAdmin: false, password: hashedPassword, events: [], myEvents: []});
 
         // create a token
         const token = createToken(user._id);
