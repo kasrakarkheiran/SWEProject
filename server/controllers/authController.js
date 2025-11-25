@@ -17,13 +17,13 @@ const signupUser = async (req, res) => {
     try {
         // validates all fields and hashes password
         const hashedPassword = await signupHelper(name, email, password)
-
-        const user = await createAccountInDb(db, {name, email, isAdmin: false, password: hashedPassword, events: [], myEvents: []});
+        const currentDate = new Date();
+        const user = await createAccountInDb(db, {name, email, isAdmin: false, password: hashedPassword, events: [], myEvents: [], dateCreated: currentDate});
 
         // create a token
         const token = createToken(user._id);
 
-        res.status(200).json({name: user.name, email: user.email, token, events: [], myEvents: []});
+        res.status(200).json({name: user.name, email: user.email, token, events: [], myEvents: [], dateCreated: user.dateCreated});
   } catch (err) {
         res.status(400).json({error: err.message})
   }
@@ -40,7 +40,7 @@ const loginUser = async (req, res) => {
         // create a token
         const token = createToken(user._id)
 
-        res.status(200).json({name: user.name, email: user.email, token, events: user.events, myEvents: user.myEvents})
+        res.status(200).json({name: user.name, email: user.email, token, events: user.events, myEvents: user.myEvents, dateCreated: user.dateCreated})
     } catch (error) {
         res.status(400).json({error: error.message})
     }

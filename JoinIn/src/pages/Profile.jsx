@@ -223,11 +223,15 @@ export function Profile() {
                     </div>
                     <div className="account-field">
                       <label className="field-label">Member Since</label>
-                      <p className="field-value">January 2025</p>
+                      <p className="field-value">
+                        {user.dateCreated
+                          ? new Date(user.dateCreated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                          : 'Date unavailable'}
+                      </p>
                     </div>
                     <div className="account-field">
                       <label className="field-label">Events Created</label>
-                      <p className="field-value">5</p>
+                      <p className="field-value">{user.myEvents.length}</p>
                     </div>
                   </div>
                   <button className="btn-edit">Edit Profile</button>
@@ -285,9 +289,11 @@ export function Profile() {
                       ))}
                 </div>
                 {/* Placeholder for empty state */}
-                <div className="empty-state">
-                  <p>No events created yet. Start by creating your first event!</p>
-                </div>
+                {events.length === 0 && (
+                  <div className="empty-state">
+                    <p>No events created yet. Start by creating your first event!</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -412,9 +418,11 @@ export function Profile() {
                       ))}
                 </div>
                 {/* Placeholder for empty state */}
-                <div className="empty-state">
-                  <p>You haven't subscribed to any events yet. Go to home to find events!</p>
-                </div>
+                {subscribed.length === 0 && (
+                  <div className="empty-state">
+                    <p>You haven't subscribed to any events yet. Go to home to find events!</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
