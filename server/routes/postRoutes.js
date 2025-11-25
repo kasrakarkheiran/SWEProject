@@ -28,6 +28,9 @@ postsRoutes.get('/posts', getAllPosts)
 // PATCH a post
 postsRoutes.patch('/posts/update/:id', updatePost)
 
+// PUT a post (alias for update)
+postsRoutes.put('/posts/update/:id', updatePost)
+
 // DELETE a post
 postsRoutes.delete('/posts/delete/:id', deletePost)
 

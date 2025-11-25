@@ -11,18 +11,44 @@ const objectId = require('mongodb').ObjectId;
 
 // create a new post
 const createPost = async (request, response) => {
-    let db = database.getDatabase();
-    let mongoObj = {
-        title : request.body.title,
-        description: request.body.description,
-        content : request.body.content,
-        author : request.body.author,
-        category: request.body.category,
-        eventDate: request.body.eventDate,
-        dateCreated : request.body.dateCreated
-    };
-    let data = await db.collection('posts').insertOne(mongoObj);
-    response.json(data);
+    const db = database.getDatabase();
+    try {
+        const authorName = request.body.author;
+        const creatorEmail = request.body.creatorEmail || request.body.authorEmail || null;
+
+        const mongoObj = {
+            title: request.body.title,
+            description: request.body.description,
+            author: authorName,
+            category: request.body.category,
+            // convert incoming date strings to Date objects to ensure correct type in DB
+            eventDate: request.body.eventDate ? new Date(request.body.eventDate) : null,
+            dateCreated: request.body.dateCreated ? new Date(request.body.dateCreated) : new Date(),
+            location: request.body.location || null,
+            capacity: request.body.capacity ? Number(request.body.capacity) : null,
+            participants: authorName ? [authorName] : (request.body.participants || [])
+        };
+
+        const result = await db.collection('posts').insertOne(mongoObj);
+
+        // inserted id as string for storing in user documents
+        const insertedIdStr = result.insertedId.toString();
+
+        // If we have a creator identifier (email), add the post id to their events/myEvents arrays
+        if (creatorEmail) {
+            await db.collection('accounts').updateOne(
+                { email: creatorEmail },
+                { $addToSet: { events: insertedIdStr, myEvents: insertedIdStr } }
+            );
+        }
+
+        // return the created post document
+        const inserted = await db.collection('posts').findOne({ _id: result.insertedId });
+        response.status(201).json(inserted);
+    } catch (err) {
+        console.error('Create post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 
@@ -32,9 +58,12 @@ const getFilteredPosts = async (request, response) => {
     let db = database.getDatabase();
     let query = {};
 
-    // Filter by category if provided
+    // Filter by category if provided (case-insensitive)
     if (request.query.category && request.query.category !== '') {
-        query.category = request.query.category;
+        // escape special regex chars from input
+        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const cat = request.query.category;
+        query.category = { $regex: new RegExp(`^${escapeRegExp(cat)}$`, 'i') };
     }
 
     // Filter by event date range if provided
@@ -90,26 +119,55 @@ const getAllPosts = async (request, response) => {
 // update a post
 const updatePost = async (request, response) => {
     let db = database.getDatabase();
+    
+    // Build update object only with fields that are provided
+    let updateFields = {};
+    
+    if (request.body.title !== undefined) updateFields.title = request.body.title;
+    if (request.body.description !== undefined) updateFields.description = request.body.description;
+    if (request.body.content !== undefined) updateFields.content = request.body.content;
+    if (request.body.author !== undefined) updateFields.author = request.body.author;
+    if (request.body.category !== undefined) updateFields.category = request.body.category;
+    if (request.body.eventDate !== undefined) updateFields.eventDate = request.body.eventDate ? new Date(request.body.eventDate) : null;
+    if (request.body.dateCreated !== undefined) updateFields.dateCreated = request.body.dateCreated;
+    if (request.body.location !== undefined) updateFields.location = request.body.location;
+    if (request.body.capacity !== undefined) updateFields.capacity = request.body.capacity;
+    if (request.body.participants !== undefined) updateFields.participants = request.body.participants;
+    
     let mongoObj = {
-        $set: {
-            title : request.body.title,
-            description: request.body.description,
-            content : request.body.content,
-            author : request.body.author,
-            category: request.body.category,
-            eventDate: request.body.eventDate,
-            dateCreated : request.body.dateCreated
-        }
+        $set: updateFields
     };
-    let data = await db.collection('posts').updateOne({ _id: new objectId(request.params.id) } , mongoObj);
-    response.json(data);
+    
+    try {
+        let data = await db.collection('posts').updateOne({ _id: new objectId(request.params.id) }, mongoObj);
+        
+        // Return the updated document
+        const updated = await db.collection('posts').findOne({ _id: new objectId(request.params.id) });
+        response.json(updated);
+    } catch (err) {
+        console.error('Update post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 // delete a post
 const deletePost = async (request, response) => {
-    let db = database.getDatabase();
-    let data = await db.collection('posts').deleteOne({ _id: new objectId(request.params.id) });
-    response.json(data);
+    const db = database.getDatabase();
+    try{
+        const id = request.params.id;
+        const oid = new objectId(id);
+
+        // remove references to this post id from all user documents (events & myEvents)
+        const postIdStr = id.toString();
+        await db.collection('accounts').updateMany({}, { $pull: { events: postIdStr, myEvents: postIdStr } });
+
+        // delete the post document
+        const result = await db.collection('posts').deleteOne({ _id: oid });
+        response.json(result);
+    }catch(err){
+        console.error('Delete post error:', err);
+        response.status(500).json({ error: err.message });
+    }
 }
 
 

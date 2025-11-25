@@ -1,0 +1,214 @@
+/* Edit Event Modal */
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.edit-modal-content {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  padding: 2rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.edit-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-modal-close:hover {
+  color: #111827;
+}
+
+.edit-modal-title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.edit-event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.edit-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-form-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.edit-form-input {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  background: white;
+  color: #111827;
+}
+
+.edit-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.edit-form-input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.edit-error-message {
+  padding: 0.75rem 1rem;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.edit-btn-cancel {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.edit-btn-cancel:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.edit-btn-save {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.edit-btn-save:hover:not(:disabled) {
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+}
+
+.edit-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .edit-modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .edit-modal-title {
+    font-size: 1.5rem;
+  }
+
+  .edit-event-form {
+    gap: 1rem;
+  }
+
+  .edit-form-group {
+    gap: 0.4rem;
+  }
+
+  .edit-form-label {
+    font-size: 0.9rem;
+  }
+
+  .edit-form-input {
+    padding: 0.625rem;
+    font-size: 0.9rem;
+  }
+
+  .edit-modal-actions {
+    gap: 0.75rem;
+  }
+
+  .edit-btn-cancel,
+  .edit-btn-save {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+}

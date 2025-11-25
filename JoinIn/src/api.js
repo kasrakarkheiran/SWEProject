@@ -3,6 +3,18 @@ import axios from 'axios';
 
 const URL = "http://localhost:3000";
 
+
+export async function getMe(email){
+    const response = await axios.get(`${URL}/me/${email.toString()}`)
+    if (response.status === 200){
+        return response.data;
+    }
+    else{
+        console.log("Account verification error");
+    }
+}
+
+
 export async function getAllAccounts(){
     const response = await axios.get(`${URL}/accounts`);
     if (response.status === 200) {
@@ -50,6 +62,28 @@ export async function updateEvents(email, events)
         throw error;
     }
 }
+
+export async function getSubscribedEvents(email){
+    try{
+        const response = await axios.get(`${URL}/accounts/subscribed/${email.toString()}`);
+        return response.data;
+    }catch(error){
+        console.log("fetching sunscribed to events error: ", error);
+        throw error;
+    }
+}
+
+
+export async function getMyEvents(email){
+    try{
+        const response = await axios.get(`${URL}/accounts/myEvents/${email.toString()}`)
+        return response.data;
+    }catch(err){
+        console.log("fetching User events error: ", err);
+        throw err;
+    }
+}
+
 
 export async function getFilteredPosts(queryParams){
     try {

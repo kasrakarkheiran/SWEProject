@@ -4,28 +4,81 @@ import React, { useState } from 'react';
 import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
+import { SubscribedEventCard } from "../components/ProfileSubscribeCard";
+import { MyEventCard } from "../components/myEventsCard";
+import { PostDetailsModal } from "../components/PostDetailsModal";
+import { EditEventModal } from "../components/EditEventModal";
 import '../styles/profile.css';
 import { useEffect } from "react";
+import { getSubscribedEvents, createPost, getMyEvents, deletePost } from "../api";
 
 
 export function Profile() {
   const {user, dispatch} = useAuthContext();
   const [activeTab, setActiveTab] = useState('account');
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     eventDate: '',
-    category: ''
+    category: '',
+    location: '',
+    capacity: ''
   });
 
   const [subscribed, setSubscribed] = useState([]);
   const [events, setEvents] = useState([]);
+
   useEffect(()=>{
+    // re-run whenever user object changes (email or their events/subscriptions change)
+    if(!user?.email){
+      setSubscribed([]);
+      return;
+    }
+
+    let mounted = true;
+    async function subscribeSetter(){
+      try {
+        const response = await getSubscribedEvents(user.email);
+        if(mounted){
+          setSubscribed(response || []);
+        }
+      } catch(err){
+        console.error("Failed fetching subscribed events: ", err);
+      }
+    }
+    subscribeSetter();
+    return () => {
+      mounted = false;
+    };
+  },[user])
+  
+  useEffect(()=>{
+    // re-run whenever user changes to pick up new/removed my events without a manual refresh
+    if(!user?.email){
+      setEvents([]);
+      return;
+    }
+
+    let mounted = true;
     async function eventSetter(){
-      setEvents(user.events);
+      try {
+        const response = await getMyEvents(user.email);
+        if(mounted){
+          setEvents(response || []);
+        }
+      } catch(err){
+        console.error("Failed fetching subscribed events: ", err);
+      }
     }
     eventSetter();
-  })
+    return () => {
+      mounted = false;
+    };
+  },[user])
 
 
   const handleFormChange = (e) => {
@@ -36,16 +89,71 @@ export function Profile() {
     }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log('Event Created:', formData);
-    // Add your API call here to create event
-    setFormData({
-      title: '',
-      description: '',
-      eventDate: '',
-      category: ''
-    });
+    if (!user) return alert('You must be logged in to create an event');
+
+    const post = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      // convert date-string (from <input type="date">) to an ISO date string; server converts to Date
+      eventDate: formData.eventDate ? new Date(formData.eventDate) : null,
+      dateCreated: new Date(),
+      author: user.name,
+      // include creator email so server can update the account document
+      creatorEmail: user.email,
+      location: formData.location || null,
+      capacity: formData.capacity ? Number(formData.capacity) : null,
+      participants: []
+    };
+
+    try{
+      const res = await createPost(post);
+      // axios returns a response object; success if status in 200s
+      if (res && res.status >= 200 && res.status < 300) {
+        // server returned created post document
+        const created = res.data;
+
+        // optimistic update: add new post id to local user context so UI updates immediately
+        const newId = created && (created._id || created.insertedId);
+        if (newId) {
+          const idStr = typeof newId === 'string' ? newId : newId.toString();
+          const updatedUser = {
+            ...user,
+            events: Array.isArray(user?.events) ? [...user.events, idStr] : [idStr],
+            myEvents: Array.isArray(user?.myEvents) ? [...user.myEvents, idStr] : [idStr]
+          };
+          dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+
+        // update local `events` state so My Events shows the newly created event immediately
+        if (created) {
+          setEvents(prev => Array.isArray(prev) ? [...prev, created] : [created]);
+          // if creator is automatically a participant, also add to subscribed list so "Subscribed" tab shows it
+          setSubscribed(prev => Array.isArray(prev) ? [...prev, created] : [created]);
+        }
+
+        // clear form
+        setFormData({
+          title: '',
+          description: '',
+          eventDate: '',
+          category: '',
+          location: '',
+          capacity: ''
+        });
+
+        console.log('Event created', created);
+      } else {
+        console.error('Create post failed', res);
+        alert('Failed to create event');
+      }
+    }catch(err){
+      console.error('Error creating post', err);
+      alert('Error creating event');
+    }
   };
 
   return (
@@ -132,8 +240,49 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">My Events</h2>
                 <div className="events-grid">
-                  {//EVENTS GO HERE
-                  }
+                  {events.map((post) => (
+                      <div key={post._id} className="post-item" onClick={() => {
+                        setSelectedPost(post);
+                        setIsModalOpen(true);
+                      }}>
+                        <MyEventCard 
+                          event={post}
+                          onEdit={(id) => {
+                            const postToEdit = events.find(p => p._id === id);
+                            setEditingPost(postToEdit);
+                            setIsEditModalOpen(true);
+                          }}
+                          onDelete={async () => {
+                            try{
+                              // call backend to delete post and remove references
+                              const res = await deletePost(post._id);
+                              if (res && (res.status === 200 || res.status === 202 || res.status === 204)){
+                                // remove from local events list
+                                setEvents(prev => prev.filter(p => p._id !== post._id));
+
+                                // also remove from subscribed list so subscribed tab is in sync
+                                setSubscribed(prev => prev.filter(p => p._id !== post._id));
+
+                                // remove from current user context arrays and localStorage
+                                const updatedUser = {
+                                  ...user,
+                                  events: (user.events || []).filter(id => id !== post._id),
+                                  myEvents: (user.myEvents || []).filter(id => id !== post._id)
+                                };
+                                dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+                                localStorage.setItem('user', JSON.stringify(updatedUser));
+                              } else {
+                                console.error('Failed to delete post', res);
+                                alert('Failed to delete event');
+                              }
+                            }catch(err){
+                              console.error('Delete event error', err);
+                              alert('Error deleting event');
+                            }
+                          }} 
+                        />
+                      </div>
+                      ))}
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">
@@ -212,6 +361,33 @@ export function Profile() {
                         required
                       />
                     </div>
+
+                    <div className="form-group">
+                      <label htmlFor="location" className="form-label">Location</label>
+                      <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleFormChange}
+                        className="form-input"
+                        placeholder="e.g., Community Park"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="capacity" className="form-label">Capacity</label>
+                      <input
+                        type="number"
+                        id="capacity"
+                        name="capacity"
+                        value={formData.capacity}
+                        onChange={handleFormChange}
+                        className="form-input"
+                        min="1"
+                        placeholder="Max participants"
+                      />
+                    </div>
                   </div>
 
                   <button type="submit" className="btn-submit">Create Event</button>
@@ -224,26 +400,16 @@ export function Profile() {
               <div className="tab-pane active">
                 <h2 className="tab-title">Subscribed Events</h2>
                 <div className="events-grid">
-                  <div className="event-card subscribed">
-                    <div className="event-header">
-                      <h3 className="event-title">Volleyball Game</h3>
-                      <span className="event-badge">Joined</span>
-                    </div>
-                    <p className="event-info">📍 Beach Courts</p>
-                    <p className="event-info">📅 March 16, 2025</p>
-                    <p className="event-participants">👥 6 people attending</p>
-                    <button className="btn-leave">Leave Event</button>
-                  </div>
-                  <div className="event-card subscribed">
-                    <div className="event-header">
-                      <h3 className="event-title">Tennis Match</h3>
-                      <span className="event-badge">Joined</span>
-                    </div>
-                    <p className="event-info">📍 Tennis Court</p>
-                    <p className="event-info">📅 March 20, 2025</p>
-                    <p className="event-participants">👥 4 people attending</p>
-                    <button className="btn-leave">Leave Event</button>
-                  </div>
+                    {subscribed.map((post) => (
+                      <div key={post._id} className="post-item" onClick={() => {
+                        setSelectedPost(post);
+                        setIsModalOpen(true);
+                      }}>
+                        <SubscribedEventCard event={post} onLeave={() => {
+                          setSubscribed(prev => prev.filter(p => p._id !== post._id));
+                        }} />
+                      </div>
+                      ))}
                 </div>
                 {/* Placeholder for empty state */}
                 <div className="empty-state">
@@ -253,6 +419,18 @@ export function Profile() {
             )}
           </div>
         </div>
+
+        <PostDetailsModal post={selectedPost} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={user} />
+        <EditEventModal 
+          post={editingPost} 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={(updatedPost) => {
+            // Update the event in the local events list
+            setEvents(prev => prev.map(p => p._id === updatedPost._id ? updatedPost : p));
+            alert('Event updated successfully');
+          }}
+        />
       </div>
     </div>
   );

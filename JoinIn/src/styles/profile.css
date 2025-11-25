@@ -79,7 +79,9 @@
 .tabs-nav {
   display: flex;
   border-bottom: 2px solid #e5e7eb;
-  overflow-x: auto;
+  /* allow buttons to wrap to new line instead of rendering a horizontal scrollbar */
+  overflow-x: visible;
+  flex-wrap: wrap;
 }
 
 .tab-button {
@@ -306,6 +308,7 @@
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   max-width: 600px;
+  margin: 0 auto; /* center form horizontally within its container */
 }
 
 .form-group {
@@ -330,6 +333,8 @@
   font-size: 1rem;
   font-family: inherit;
   transition: all 0.2s ease;
+  background: white; /* ensure inputs are white even if the site root uses dark scheme */
+  color: #111827; /* dark text for readability */
 }
 
 .form-input:focus,

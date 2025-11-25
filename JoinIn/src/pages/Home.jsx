@@ -5,6 +5,7 @@ import axios from "axios";
 import PostForm from "../components/PostForm.jsx"
 import PostDetails from "../components/PostDetails.jsx";
 import { PostCard } from "../components/PostCard.jsx";
+import { PostDetailsModal } from "../components/PostDetailsModal.jsx";
 import { Navbar } from "../components/Navbar.jsx";
 import { Search, X, Filter } from 'lucide-react';
 import '../styles/home.css'
@@ -13,6 +14,8 @@ export function Home() {
     
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         category : '',
         eventStartDate : '',
@@ -207,7 +210,10 @@ export function Home() {
 
                     <div className="posts-grid">
                         {posts.map((post) => (
-                        <div key={post._id} className="post-item">
+                        <div key={post._id} className="post-item" onClick={() => {
+                          setSelectedPost(post);
+                          setIsModalOpen(true);
+                        }}>
                             <PostCard post={post} />
                         </div>
                         ))}
@@ -215,6 +221,8 @@ export function Home() {
                     </>
                 )}
                 </div>
+
+                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </div>
         </div>
     );
