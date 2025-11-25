@@ -9,6 +9,8 @@ export function usePosts() {
         eventStartDate: "",
         eventEndDate: ""
     });
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Load all posts once
     useEffect(() => {
@@ -64,6 +66,6 @@ export function usePosts() {
         filters,
         updateFilter,
         fetchFilteredPosts,
-        clearFilters
+        clearFilters,
     };
 }

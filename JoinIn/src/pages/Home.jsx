@@ -1,3 +1,5 @@
+import {useState} from "react";
+import { PostDetailsModal } from "../components/PostDetailsModal.jsx";
 import { Navbar } from "../components/Navbar.jsx";
 import { PostCard } from "../components/PostCard.jsx";
 import { PostFilters } from "../components/PostFilter.jsx";
@@ -13,6 +15,9 @@ export function Home() {
         fetchFilteredPosts,
         clearFilters
     } = usePosts();
+
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div className="home-container">
@@ -62,13 +67,19 @@ export function Home() {
 
                             <div className="posts-grid">
                                 {posts.map((post) => (
-                                    <PostCard key={post._id} post={post} />
+                                    <div key={post._id} className="post-item" onClick={() => {
+                                        setSelectedPost(post);
+                                        setIsModalOpen(true);
+                                    }}>
+                                    <PostCard post={post} />
+                                    </div>
                                 ))}
                             </div>
                         </>
                     )}
                 </div>
 
+                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </div>
         </div>
     );

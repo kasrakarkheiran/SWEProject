@@ -1,5 +1,5 @@
 import {createContext, useReducer, useEffect} from 'react'
-
+import { getMe } from '../api'
 export const AuthContext = createContext()
 
 
@@ -21,27 +21,43 @@ Global state for user variable; all components can change "user" if you import u
 To login/logout user, use dispatch function
 */
 export const AuthContextProvider = ({children}) => {
-    const [state, dispatch] = useReducer(authReducer, {
-        user: null
-    })
-
-    // // fire this when the component first renders; makes sure React updates user context when page is refreshed
-    // useEffect(() => {
-    //     const user = JSON.parse(localStorage.getItem('user'))
-
-    //     if (user) {
-    //         dispatch({type: 'LOGIN', payload: user})
-    //     }
-    // }, [])
-    // console.log('AuthContext state: ', state)
-
-    //Sync on first page load
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser){
-            dispatch({type: "LOGIN", payload: storedUser})
+    // Initialize state synchronously from localStorage so routes render correctly on refresh
+    const initializer = () => {
+            try {
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                return { user: storedUser || null };
+            } catch (err) {
+                return { user: null };
+            }
         }
-    },[]);
+
+        const [state, dispatch] = useReducer(authReducer, undefined, initializer)
+
+        // After synchronous init, attempt to refresh/validate the user from backend
+        useEffect(() => {
+            const storedUser = state.user;
+            if (!storedUser){
+                return;
+            }
+
+            async function refresh(){
+                try{
+                    const res = await getMe(storedUser.email);
+                    // getMe returns the user object (api wrapper) or throws; handle both
+                    if(!res){
+                        console.log("AuthContext: refresh returned no user")
+                        return;
+                    }
+                    // if getMe is an axios wrapper returning data, just use it
+                    const fresh = res;
+                    dispatch({type:"LOGIN", payload:fresh})
+                    localStorage.setItem("user", JSON.stringify(fresh))
+                }catch(error){
+                    console.error("Failed to refresh user: ", error);
+                }
+            }
+            refresh();
+        },[]);
     //keeping local storage synced with context whenever user changes
     useEffect(() => {
         if(state.user){
