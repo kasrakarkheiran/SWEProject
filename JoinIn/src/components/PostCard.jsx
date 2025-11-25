@@ -1,13 +1,12 @@
-import { updateEvents, getOneAccount } from "../api";
+import { updateEvents, getOneAccount, deletePost } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState, useEffect } from "react";
 import { Calendar, Tag, User, Heart, LogIn } from 'lucide-react';
 import '../styles/postcard.css'
 
-export const PostCard = ({post}) => {
+export const PostCard = ({post, setAdminDelete}) => {
     const { user, dispatch } = useAuthContext();
     const [loading, setLoading] = useState(false);
-
 
     let isJoined = Boolean(user?.events?.includes(post._id));
 
@@ -43,7 +42,7 @@ export const PostCard = ({post}) => {
             dispatch({type: "UPDATE_USER", payload: freshUser});
             localStorage.setItem("user", JSON.stringify(freshUser))
         }catch(e){
-            console.log("failed to join event ",e)
+            console.log("failed to join event", e)
             
         }finally{
             setLoading(false)
@@ -58,28 +57,43 @@ export const PostCard = ({post}) => {
         setLoading(false);
     }
 
+    const isAdmin = user.isAdmin;
+    console.log(isAdmin)
+    
+    async function handleAdminDelete() {
+        if (!isAdmin) {
+            console.log("Shouldn't have reached here... Aborting function");
+            return;
+        }
+    
+        setAdminDelete(isAdmin);
+    }
+
     return (
         <div className="post-card">
             <div className="post-header">
                 <h2 className="post-title">{post.title}</h2>
+                <div className="post-buttons">
+                    <button
+                    className={`post-action-btn ${isJoined ? 'joined' : ''}`}
+                    onClick={isJoined ? handleLeave : handleJoin}
+                    disabled={loading}
+                    >
+                    {isJoined ? (
+                        <>
+                        <Heart size={18} />
+                        <span>Joined</span>
+                        </>
+                    ) : (
+                        <>
+                        <LogIn size={18} />
+                        <span>{loading ? 'Joining...' : 'Join Event'}</span>
+                        </>
+                    )}
+                    </button>
+                    { isAdmin && <button onClick={handleAdminDelete} className="post-action-btn delete">Delete</button> }
+                </div>
                 
-                <button
-                className={`post-action-btn ${isJoined ? 'joined' : ''}`}
-                onClick={isJoined ? handleLeave : handleJoin}
-                disabled={loading}
-                >
-                {isJoined ? (
-                    <>
-                    <Heart size={18} />
-                    <span>Joined</span>
-                    </>
-                ) : (
-                    <>
-                    <LogIn size={18} />
-                    <span>{loading ? 'Joining...' : 'Join Event'}</span>
-                    </>
-                )}
-                </button>
             </div>
 
             <p className="post-description">{post.description}</p>

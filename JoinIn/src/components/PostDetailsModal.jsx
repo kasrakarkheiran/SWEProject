@@ -1,8 +1,9 @@
 import React from 'react';
 import { X, Calendar, MapPin, Users, User } from 'lucide-react';
+import { deletePost } from '../api';
 import '../styles/postDetailsModal.css';
 
-export const PostDetailsModal = ({ post, isOpen, onClose, user }) => {
+export const PostDetailsModal = ({ post, isOpen, onClose, adminDelete, onDelete, user }) => {
   if (!isOpen || !post) return null;
 
   const eventDate = post.eventDate ? new Date(post.eventDate).toLocaleDateString('en-US', { 
@@ -10,6 +11,12 @@ export const PostDetailsModal = ({ post, isOpen, onClose, user }) => {
     day: 'numeric', 
     year: 'numeric' 
   }) : 'Date TBA';
+
+  const postDelete = async () => {
+    deletePost(post._id);
+    onDelete();
+    onClose();
+  }
 
   const participantCount = post.participants?.length || 0;
 
@@ -90,7 +97,7 @@ export const PostDetailsModal = ({ post, isOpen, onClose, user }) => {
         </div>
 
         <div className="modal-footer">
-          <button className="modal-btn-close" onClick={onClose}>Close</button>
+          { !adminDelete ? <button className="modal-btn-close" onClick={onClose}>Close</button> : <button className="post-action-btn delete" onClick={postDelete}>Delete</button>}
         </div>
       </div>
     </div>
