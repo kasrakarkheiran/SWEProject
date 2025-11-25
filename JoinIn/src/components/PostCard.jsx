@@ -1,4 +1,4 @@
-import { updateEvents, getOneAccount, deletePost } from "../api";
+import { updateEvents, getOneAccount, deletePost, updatePost } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState, useEffect } from "react";
 import { Calendar, Tag, User, Heart, LogIn } from 'lucide-react';
@@ -42,6 +42,9 @@ export const PostCard = ({post, setAdminDelete}) => {
             }
             dispatch({type: "UPDATE_USER", payload: freshUser});
             localStorage.setItem("user", JSON.stringify(freshUser))
+            post.participants.push(user.name);
+            updatePost(post._id, post);
+            
         }catch(e){
             console.log("failed to join event", e)
             
