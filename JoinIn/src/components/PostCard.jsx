@@ -76,7 +76,9 @@ export const PostCard = ({post, setAdminDelete}) => {
                 <div className="post-buttons">
                     <button
                     className={`post-action-btn ${isJoined ? 'joined' : ''}`}
-                    onClick={isJoined ? handleLeave : handleJoin}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        isJoined ? handleLeave() : handleJoin();}}
                     disabled={loading}
                     >
                     {isJoined ? (
