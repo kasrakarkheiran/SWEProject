@@ -161,6 +161,8 @@ const verifyEmail = async function (req, res) {
   } catch (err) {
     return res.status(400).send("Invalid or expired token");
   }
+}
+
 /*---helper functions---*/
 const updateAccountHelper = async function(user, name, email, currentPassword, newPassword){
     const db = database.getDatabase();

@@ -80,7 +80,7 @@ export function Home() {
                     )}
                 </div>
 
-                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} adminDelete={adminDelete} onDelete={() => fetchFilteredPosts(null)} onClose={() => setIsModalOpen(false)} />
+                <PostDetailsModal post={selectedPost} isOpen={isModalOpen} adminDelete={adminDelete} onDelete={() => fetchFilteredPosts()} onClose={() => setIsModalOpen(false)} />
             </div>
         </div>
     );
