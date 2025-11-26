@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { verifyEmail } from "../api";
+import { Loader } from "lucide-react"
+import { XCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import '../styles/VerifyEmail.css';
 
 export default function VerifyEmail() {
