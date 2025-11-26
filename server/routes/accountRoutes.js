@@ -31,7 +31,7 @@ accRoutes.get('/accounts/myEvents/:email', getUserEvents)
 accRoutes.get('/accounts/verify-email/:token', verifyEmail)
 
 // PATCH account
-accRoutes.patch('/accounts/update/:id', updateAccount)
+accRoutes.patch('/accounts/update/:email', updateAccount)
 
 // PATCH account events
 accRoutes.patch('/accounts/uevents/:email', updateEvents);

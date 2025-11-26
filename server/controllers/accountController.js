@@ -2,8 +2,11 @@ const { ReturnDocument } = require('mongodb');
 const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
 const jwt = require('jsonwebtoken');
-
+const bcrypt = require('bcrypt')
 const { createAccountInDb } = require('../services/accountService');
+const validator = require('validator')
+
+
 
 const getMe = async (req, res) => {
     try {
@@ -54,19 +57,34 @@ const getAllAccounts = async (req, res) => {
     res.json(data);
 }
 
-// update account
 const updateAccount = async (req, res) => {
-    let db = database.getDatabase();
-    let mongoObj = {
-        $set: {
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-            dateCreated: req.body.dateCreated
-        }
-    };
-    let data = await db.collection('accounts').updateOne({ email: req.params.email} , mongoObj);
+  try{
+    const db = database.getDatabase();
+    //updated user name, email, password
+    const { name, email, currentPassword, newPassword } = req.body;
+
+    const user = await db.collection('accounts').findOne({ email: req.params.email });
+    if (!user) throw Error("User not found");
+
+    // validates fields
+    const hashedPassword = await updateAccountHelper(user, name, email, currentPassword, newPassword)
+
+    const updateObj = { $set: { name, email } };
+
+    if (hashedPassword) {
+        updateObj.$set.password = hashedPassword; 
+    }
+
+    const data = await db.collection('accounts').updateOne(
+        { email: req.params.email }, 
+        updateObj
+    );
+
     res.json(data);
+    } catch (err) {
+        res.status(400).json({error: err.message})
+    }
+  
 }
 
 const updateEvents = async (req, res) => {
@@ -143,6 +161,43 @@ const verifyEmail = async function (req, res) {
   } catch (err) {
     return res.status(400).send("Invalid or expired token");
   }
+/*---helper functions---*/
+const updateAccountHelper = async function(user, name, email, currentPassword, newPassword){
+    const db = database.getDatabase();
+
+    //validation
+    if (!name || !email || (currentPassword && !newPassword) || (!currentPassword && newPassword)){
+        throw Error("All fields must be filled")
+    }
+    if (!validator.isEmail(email)){
+        throw Error("Email is not valid")
+    }
+
+    const userWithUpdatedEmail = await db.collection('accounts').findOne({email})
+
+    // Only throw error if the email belongs to someone else
+    if (userWithUpdatedEmail && userWithUpdatedEmail._id.toString() !== user._id.toString()) {
+        throw Error("Email already in use");
+    }
+
+    if (!currentPassword || !newPassword){
+        return;
+    }
+   
+    console.log(user)
+    const match = await bcrypt.compare(currentPassword, user.password)
+    if (!match) {
+        throw Error('Incorrect password')
+    }
+
+    if (!validator.isStrongPassword(newPassword)){
+        throw Error('Password not strong enough')
+    }
+    
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(newPassword, salt)
+
+    return hash
 }
 
 module.exports = {

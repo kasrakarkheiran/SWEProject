@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import {updateAccount} from '../api'
 import '../styles/EditProfileModal.css';
 
-export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
+export const EditProfileModal = ({user, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +11,7 @@ export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
     newPassword: ''
   });
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState(null)
 
   useEffect(() => {
     if (user) {
@@ -20,6 +21,7 @@ export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
         currentPassword: '',
         newPassword: ''
       });
+      setFormError(null);
     }
   }, [user]);
 
@@ -36,35 +38,25 @@ export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
     setLoading(true);
 
     try {
-      // If changing password, validate current password is provided
-      if (formData.newPassword && !formData.currentPassword) {
-        alert('Please enter your current password to change it');
-        setLoading(false);
-        return;
-      }
-
       const updatedUser = {
         name: formData.name,
         email: formData.email,
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
       };
 
-      // Only include password fields if user is changing password
-      if (formData.currentPassword && formData.newPassword) {
-        updatedUser.currentPassword = formData.currentPassword;
-        updatedUser.newPassword = formData.newPassword;
-      }
+      const response = await updateAccount(user.email, updatedUser);
 
-      // Call your API to update user profile
-       //const response = await updateAccount(user.email, updatedUser);
+      if(response.status == 200){
+        onSave(updatedUser);
+        onClose();
+      } else {
+        setFormError(response);
+      }
       
-      // For now, simulate success
-      //onSave(updatedUser);
-      alert('Profile updated successfully!');
-      onClose();
+    } catch (err) {
+      console.error('Error updating profile:', err);
       
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Error updating profile');
     } finally {
       setLoading(false);
     }
@@ -137,7 +129,6 @@ export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
               className="form-input"
               placeholder="Enter new password"
             />
-            <p className="password-hint">Leave blank to keep current password</p>
           </div>
 
           <div className="edit-profile-actions">
@@ -148,6 +139,9 @@ export const EditProfileModal = ({ user, isOpen, onClose, onSave }) => {
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
+          {formError && <div className="error">
+          {formError}
+          </div>}
         </form>
       </div>
     </div>

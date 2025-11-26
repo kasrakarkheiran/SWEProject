@@ -47,9 +47,15 @@ export async function getOneAccount(email)
 }
 
 export async function updateAccount(email, accountObject)
-{
-    const response = await axios.put(`${URL}/accounts/update/${email.toString()}`, accountObject);
-    return response;
+{   
+    try{
+       const response = await axios.patch(`${URL}/accounts/update/${email.toString()}`, accountObject);
+        return response; 
+    }
+    catch(err){ 
+        return err.response.data.error;
+    }
+    
 }
 
 export async function updateEvents(email, events)

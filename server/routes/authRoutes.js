@@ -1,4 +1,4 @@
-const express = require('express')
+    const express = require('express')
 
 // controller functions
 const {signupUser, loginUser} = require('../controllers/authController')
