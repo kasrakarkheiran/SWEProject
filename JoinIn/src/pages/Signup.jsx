@@ -25,7 +25,7 @@ export function Signup() {
                 <div className="signup-icon">
                     <UserPlus size={32} />
                 </div>
-                <h1 className="signup-title">Join PlayTogether</h1>
+                <h1 className="signup-title">Join In</h1>
                 <p className="signup-subtitle">Create your account to start playing</p>
                 </div>
 
