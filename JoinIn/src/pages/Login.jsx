@@ -44,7 +44,7 @@ export function Login() {
                     <LogIn size={32} />
                 </div>
                 <h1 className="login-title">Welcome Back</h1>
-                <p className="login-subtitle">Log in to your PlayTogether account</p>
+                <p className="login-subtitle">Log in to your JoinIn account</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">

@@ -56,7 +56,7 @@ export function Landing() {
 
       {/* Features Section */}
       <section className="features-section">
-        <h2 className="section-title">Why PlayTogether?</h2>
+        <h2 className="section-title">Why JoinIn?</h2>
         <div className="features-grid">
           {/* Feature 1 */}
           <div className="feature-card">
@@ -149,11 +149,11 @@ export function Landing() {
 
       {/* Footer */}
       <footer className="footer">
-        <p className="footer-brand">PlayTogether</p>
+        <p className="footer-brand">JoinIn</p>
         <p className="footer-description">
           Making casual sports accessible to everyone. No pressure, just passion.
         </p>
-        <p className="footer-copyright">© 2025 PlayTogether. All rights reserved.</p>
+        <p className="footer-copyright">© 2025 JoinIn. All rights reserved.</p>
       </footer>
     </div>
     );

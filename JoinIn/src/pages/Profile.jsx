@@ -1,5 +1,4 @@
 import {useAuthContext} from "../hooks/useAuthContext";
-import * as api from "../api.js"
 import { useState } from 'react';
 import { User, Calendar, Plus, Heart } from 'lucide-react';
 import { Navbar } from "../components/Navbar";
