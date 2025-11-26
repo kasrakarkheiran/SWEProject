@@ -34,6 +34,12 @@ const signupUser = async (req, res) => {
         // create a token
         const token = createToken(user._id);
 
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+
+        console.log(verificationUrl);
+
+        await sendEmail(user.email, "JoinIn: Verify your email", `<h1>Please verify your email by clicking the following link: <a href=${verificationUrl}>Verification Link</a></h1>`);
+
         res.status(200).json({name: user.name, email: user.email, token, events: [], myEvents: []});
   } catch (err) {
         res.status(400).json({error: err.message})
@@ -97,6 +103,10 @@ const loginHelper = async function(email, password) {
         throw Error("Incorrect email")
     }
 
+    if (!user.verified) {
+        throw Error("Email must be verified");
+    }
+
     const match = await bcrypt.compare(password, user.password)
 
     if (!match) {
@@ -106,11 +116,11 @@ const loginHelper = async function(email, password) {
     return user
 }
 
-const sendEmail = function(to, subject, htmlBody) {
-    transporter.sendMail({
+const sendEmail = async function(to, subject, htmlBody) {
+    await transporter.sendMail({
         to: to,
         subject: subject,
-        body: htmlBody
+        html: htmlBody
     }).then(() => { 
         console.log('Email sent'); 
     }).catch(err => {

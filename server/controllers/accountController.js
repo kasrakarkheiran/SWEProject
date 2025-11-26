@@ -1,11 +1,9 @@
 const { ReturnDocument } = require('mongodb');
 const database = require('../connect');
 const objectId = require('mongodb').ObjectId;
+const jwt = require('jsonwebtoken')
 
 const { createAccountInDb } = require('../services/accountService');
-
-
-
 
 const getMe = async (req, res) => {
     try {
@@ -126,6 +124,26 @@ const getUserEvents = async (req, res) => {
   res.json(events);
 };
 
+const verifyEmail = async function (req, res) {
+    try {
+        const db = database.getDatabase();
+        const token = req.params.token;
+
+        const userId = jwt.verify(token, process.env.SECRET)._id;
+
+        let mongoObj = {
+            $set: {
+                verified: true
+            }
+        }
+
+        let result = await db.collection('accounts').findOneAndUpdate({ _id: new objectId(userId) }, mongoObj, { returnDocument: "after" });
+
+        res.status(200).json(result.value);
+  } catch (err) {
+    return res.status(400).send("Invalid or expired token");
+  }
+}
 
 module.exports = {
     createAccount,
@@ -136,5 +154,6 @@ module.exports = {
     updateEvents,
     getSubscribedEvents,
     getUserEvents,
-    getMe
+    getMe,
+    verifyEmail,
 }

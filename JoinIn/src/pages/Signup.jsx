@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {useSignup} from "../hooks/useSignup.jsx"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 import '../styles/signup.css'
 
@@ -9,6 +9,7 @@ export function Signup() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const {signup, error, isLoading} = useSignup()
+    const navigate = useNavigate();
     const events = [];
     const handleSubmit = async (e) => {
         //prevent default refresh
@@ -16,7 +17,6 @@ export function Signup() {
 
         await signup(name, email, password, events)
     }
-
 
     return (
         <div className="signup-container">

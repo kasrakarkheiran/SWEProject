@@ -6,6 +6,8 @@ import {Home} from './pages/Home'
 import {Profile} from './pages/Profile'
 import {Layout} from './components/Layout'
 import {useAuthContext} from './hooks/useAuthContext.jsx';
+import VerifyPending from './pages/VerifyPending.jsx';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 
 function App() {
   //Pages so far:
@@ -26,8 +28,10 @@ function App() {
         </Route>
         
         <Route path="/" element={!user ? <Landing/> : <Navigate to="/home"/>}/>
-        <Route path="/signup" element={!user ? <Signup/> : <Navigate to="/home"/>}/>
+        <Route path="/signup" element={!user ? <Signup/> : <Navigate to="/verify-pending"/>}/>
         <Route path="/login" element={!user ? <Login/> : <Navigate to="/home"/>}/>
+        <Route path="/verify-pending" element={<VerifyPending/>}/>
+        <Route path="/verify-email/:token" element={<VerifyEmail/>}/>
         
       </Routes>
     </BrowserRouter>
