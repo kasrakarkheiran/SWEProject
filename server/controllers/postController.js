@@ -7,6 +7,7 @@
 */
 
 const database = require('../connect');
+const { sendEmail } = require('./authController');
 const objectId = require('mongodb').ObjectId;
 
 // create a new post
@@ -20,6 +21,7 @@ const createPost = async (request, response) => {
             title: request.body.title,
             description: request.body.description,
             author: authorName,
+            authorEmail: creatorEmail,
             category: request.body.category,
             // convert incoming date strings to Date objects to ensure correct type in DB
             eventDate: request.body.eventDate ? new Date(request.body.eventDate) : null,
@@ -95,6 +97,15 @@ const getFilteredPosts = async (request, response) => {
     }
 }
 
+const sendEmailNotification = async (req, res) => {
+    if (!req.body.to || !req.body.subject || !req.body.htmlBody) {
+        res.status(400).json({ error: `Missing email parameters, here is req.body: ${req.body}` });
+    }
+
+    console.log(req.body);
+    let data = await sendEmail(req.body.to, req.body.subject, req.body.htmlBody);
+    res.status(200).json(data);
+}
 
 // get a single post
 const getOnePost = async (request, response) => {
@@ -177,5 +188,6 @@ module.exports = {
     getOnePost,
     getAllPosts,
     updatePost,
-    deletePost
+    deletePost,
+    sendEmailNotification
 };

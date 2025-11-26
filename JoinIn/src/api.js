@@ -142,3 +142,8 @@ export async function verifyEmail(token) {
     const response = await axios.get(`${URL}/accounts/verify-email/${token}`);
     return response;
 }
+
+export async function sendEmailNotification(to, subject, htmlBody) {
+    const response = await axios.put(`${URL}/posts/email-notif`, { to: to, subject: subject, htmlBody: htmlBody });
+    return response;
+}

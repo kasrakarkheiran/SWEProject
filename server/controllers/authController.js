@@ -124,6 +124,7 @@ const sendEmail = async function(to, subject, htmlBody) {
     }).catch(err => {
         console.log(err);
     })
+    return { to: to, subject: subject, htmlBody: htmlBody };
 }
 
 module.exports = {signupUser, loginUser, sendEmail}
