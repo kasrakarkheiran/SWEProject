@@ -1,6 +1,7 @@
 import {useState, } from 'react'
 import {useAuthContext} from './useAuthContext'
 import {useNavigate} from 'react-router-dom';
+import { getMe } from '../api';
 
 export const useLogin = () => {
     const navigate = useNavigate()
@@ -25,6 +26,13 @@ export const useLogin = () => {
             setError(json.error)
         }
         if (response.ok) {
+            const user = await getMe(json.email);
+
+            if (!user.verified) {
+                setIsLoading(false);
+                setError("Account not verified");
+            }
+
             //save user to local storage
             localStorage.setItem('user', JSON.stringify(json))
 

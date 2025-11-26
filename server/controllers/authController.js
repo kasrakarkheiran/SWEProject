@@ -4,6 +4,17 @@ const bcrypt = require('bcrypt')
 
 const { createAccountInDb } = require('../services/accountService');
 const database = require('../connect');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_SECRET,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 const createToken = (_id => {
     return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'})
@@ -18,10 +29,14 @@ const signupUser = async (req, res) => {
         // validates all fields and hashes password
         const hashedPassword = await signupHelper(name, email, password)
         const currentDate = new Date();
-        const user = await createAccountInDb(db, {name, email, isAdmin: false, password: hashedPassword, events: [], myEvents: [], dateCreated: currentDate});
+        const user = await createAccountInDb(db, {name, email, isAdmin: false, verified: false, password: hashedPassword, events: [], myEvents: [], dateCreated: currentDate});
 
         // create a token
         const token = createToken(user._id);
+
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+
+        await sendEmail(user.email, "JoinIn: Verify your email", `<h1>Please verify your email by clicking the following link: <a href=${verificationUrl}>Verification Link</a></h1>`);
 
         res.status(200).json({name: user.name, email: user.email, token, events: [], myEvents: [], dateCreated: user.dateCreated});
   } catch (err) {
@@ -86,6 +101,10 @@ const loginHelper = async function(email, password) {
         throw Error("Incorrect email")
     }
 
+    if (!user.verified) {
+        throw Error("Email must be verified");
+    }
+
     const match = await bcrypt.compare(password, user.password)
 
     if (!match) {
@@ -95,4 +114,16 @@ const loginHelper = async function(email, password) {
     return user
 }
 
-module.exports = {signupUser, loginUser}
+const sendEmail = async function(to, subject, htmlBody) {
+    await transporter.sendMail({
+        to: to,
+        subject: subject,
+        html: htmlBody
+    }).then(() => { 
+
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+module.exports = {signupUser, loginUser, sendEmail}

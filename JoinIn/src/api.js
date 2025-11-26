@@ -137,3 +137,8 @@ export async function updatePost(id, accountObject)
     const response = await axios.put(`${URL}/posts/update/${id}`, accountObject);
     return response;
 }
+
+export async function verifyEmail(token) {
+    const response = await axios.get(`${URL}/accounts/verify-email/${token}`);
+    return response;
+}

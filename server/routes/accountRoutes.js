@@ -9,7 +9,8 @@ const {
     updateEvents,
     getSubscribedEvents,
     getUserEvents,
-    getMe
+    getMe,
+    verifyEmail
 } = require('../controllers/accountController.js')
 
 
@@ -26,6 +27,8 @@ accRoutes.get('/accounts/subscribed/:email', getSubscribedEvents)
 
 //GET user created Events
 accRoutes.get('/accounts/myEvents/:email', getUserEvents)
+
+accRoutes.get('/accounts/verify-email/:token', verifyEmail)
 
 // PATCH account
 accRoutes.patch('/accounts/update/:email', updateAccount)
