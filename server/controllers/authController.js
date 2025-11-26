@@ -4,6 +4,17 @@ const bcrypt = require('bcrypt')
 
 const { createAccountInDb } = require('../services/accountService');
 const database = require('../connect');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_SECRET,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 const createToken = (_id => {
     return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'})
@@ -18,7 +29,7 @@ const signupUser = async (req, res) => {
         // validates all fields and hashes password
         const hashedPassword = await signupHelper(name, email, password)
 
-        const user = await createAccountInDb(db, {name, email, isAdmin: false, password: hashedPassword, events: [], myEvents: []});
+        const user = await createAccountInDb(db, {name, email, isAdmin: false, verified: false, password: hashedPassword, events: [], myEvents: []});
 
         // create a token
         const token = createToken(user._id);
@@ -95,4 +106,16 @@ const loginHelper = async function(email, password) {
     return user
 }
 
-module.exports = {signupUser, loginUser}
+const sendEmail = function(to, subject, htmlBody) {
+    transporter.sendMail({
+        to: to,
+        subject: subject,
+        body: htmlBody
+    }).then(() => { 
+        console.log('Email sent'); 
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+module.exports = {signupUser, loginUser, sendEmail}
