@@ -1,6 +1,6 @@
 import { Calendar, Tag, User, Heart } from 'lucide-react';
 import '../styles/SubscribeCard.css';
-import { updateEvents, getOneAccount, updatePost } from "../api";
+import { updateEvents, getOneAccount, updatePost, sendEmailNotification } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState } from "react";
 
@@ -18,11 +18,23 @@ export const SubscribedEventCard = ({event, onLeave}) => {
             const events = user?.events || [];
             const updatedEvents = events.filter(item => item !== id);
 
+            const to = event.authorEmail;
+            const subject = `${user.name} has unsubscribed to your event`
+            const htmlBody = `<h1>Hello ${event.author}, ${user.name} has unsubscribed to your ${event.category} event at ${event.location} on ${new Date(event.eventDate).toDateString()}</h1>`
+
             // update backend
             await updateEvents(user.email, updatedEvents);
 
             event.participants = event.participants.filter((name) => name != user.name);
             updatePost(event._id, event);
+
+            let emailResult = await sendEmailNotification(to, subject, htmlBody);
+            console.log(emailResult);
+
+            if (emailResult.status !== 200) {
+              console.log(emailResult);
+            }
+
 
             // Try to fetch fresh user from backend
             let freshUser;

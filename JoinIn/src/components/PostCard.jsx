@@ -1,4 +1,4 @@
-import { updateEvents, getOneAccount, deletePost, updatePost } from "../api";
+import { updateEvents, getOneAccount, deletePost, updatePost, sendEmailNotification } from "../api";
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState, useEffect } from "react";
 import { Calendar, Tag, User, Heart, LogIn } from 'lucide-react';
@@ -9,6 +9,8 @@ export const PostCard = ({post, setAdminDelete}) => {
     const [loading, setLoading] = useState(false);
 
     let isJoined = Boolean(user?.events?.includes(post._id));
+    //checks if event is full or not
+    let isFull = Boolean(post.participants.length >= post.capacity);
 
     async function handleJoin(){
         setLoading(true);
@@ -44,6 +46,16 @@ export const PostCard = ({post, setAdminDelete}) => {
             post.participants.push(user.name);
             updatePost(post._id, post);
             
+            const to = post.authorEmail;
+            const subject = `${user.name} has JoinIned to your event`
+            const htmlBody = `<h1>Hello ${post.author}, ${user.name} has joined your ${post.category} event at ${post.location} on ${new Date(post.eventDate).toDateString()}</h1>`
+
+            let emailResult = await sendEmailNotification(to, subject, htmlBody);
+
+            if (emailResult.status !== 200) {
+                console.log(emailResult);
+            }
+
         }catch(e){
             console.log("failed to join event", e)
             
@@ -82,17 +94,22 @@ export const PostCard = ({post, setAdminDelete}) => {
                     onClick={(e) => {
                         e.stopPropagation();
                         isJoined ? handleLeave() : handleJoin();}}
-                    disabled={loading}
+                    disabled={loading || (!isJoined && isFull)}
                     >
                     {isJoined ? (
                         <>
-                        <Heart size={18} />
-                        <span>Joined</span>
+                            <Heart size={18} />
+                            <span>Joined</span>
                         </>
-                    ) : (
+                    ) : isFull ? (
                         <>
-                        <LogIn size={18} />
-                        <span>{loading ? 'Joining...' : 'Join Event'}</span>
+                            <span>Event Full</span>
+                        </>
+
+                    ):(
+                        <>
+                            <LogIn size={18} />
+                            <span>{loading ? 'Joining...' : 'Join Event'}</span>
                         </>
                     )}
                     </button>

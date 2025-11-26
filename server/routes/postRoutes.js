@@ -6,7 +6,8 @@ const {
     getOnePost,
     getAllPosts,
     updatePost,
-    deletePost
+    deletePost,
+    sendEmailNotification
 } = require('../controllers/postController.js')
 
 let postsRoutes = express.Router();
@@ -34,5 +35,6 @@ postsRoutes.put('/posts/update/:id', updatePost)
 // DELETE a post
 postsRoutes.delete('/posts/delete/:id', deletePost)
 
+postsRoutes.put('/posts/email-notif', sendEmailNotification);
 
 module.exports = postsRoutes;
