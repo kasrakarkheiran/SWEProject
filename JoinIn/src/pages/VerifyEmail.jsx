@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { verifyEmail } from "../api";
+import '../styles/VerifyEmail.css';
 
 export default function VerifyEmail() {
     const { token } = useParams();
@@ -30,9 +31,65 @@ export default function VerifyEmail() {
         verify();
     }, [token, navigate]);
 
+    const isSuccess = status.includes("successfully");
+    const isError = status.includes("failed") || status.includes("wrong");
+
     return (
-        <div style={{ padding: "20px", textAlign: "center" }}>
-            <h1>{loading ? "Verifying..." : status}</h1>
+        <div className="verify-email-container">
+            <div className="verify-email-box">
+                <div className="verify-icon-container">
+                    {loading && (
+                        <div className="verify-icon loading">
+                            <Loader size={48} />
+                        </div>
+                    )}
+                    {!loading && isSuccess && (
+                        <div className="verify-icon success">
+                            <CheckCircle size={48} />
+                        </div>
+                    )}
+                    {!loading && isError && (
+                        <div className="verify-icon error">
+                            <XCircle size={48} />
+                        </div>
+                    )}
+                </div>
+
+                <h1 className="verify-title">
+                    {loading ? "Verifying Your Email" : status}
+                </h1>
+
+                {loading && (
+                    <p className="verify-subtitle">Please wait while we verify your email address...</p>
+                )}
+
+                {!loading && isSuccess && (
+                    <p className="verify-subtitle">You'll be redirected to login shortly.</p>
+                )}
+
+                {!loading && isError && (
+                    <div className="verify-actions">
+                        <button 
+                            className="btn-back-home"
+                            onClick={() => navigate("/")}
+                        >
+                            Back to Home
+                        </button>
+                        <button 
+                            className="btn-try-login"
+                            onClick={() => navigate("/login")}
+                        >
+                            Go to Login
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="verify-background">
+                <div className="background-shape shape-1"></div>
+                <div className="background-shape shape-2"></div>
+                <div className="background-shape shape-3"></div>
+            </div>
         </div>
     );
 }
