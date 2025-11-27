@@ -68,7 +68,6 @@ const updateAccount = async (req, res) => {
     if (!user) throw Error("User not found");
 
     const oldName = user.name;
-    const oldEmail = user.email;
 
     // validates fields
     const hashedPassword = await updateAccountHelper(user, name, email, currentPassword, newPassword)
@@ -84,21 +83,18 @@ const updateAccount = async (req, res) => {
         updateObj
     );
     
+    const userEvents = user.events.map(id => new objectId(id));
+    const userMyEvents = user.myEvents.map(id => new objectId(id));
+
+    let postData = await db.collection('posts').updateMany({_id: {$in: userMyEvents}}, {$set : {authorEmail : email }});
+
     if (name !== oldName) {
-        let postData = await db.collection('posts').updateMany({}, {$pull : { participants: oldName }});
 
-        postData = await db.collection('posts').updateMany({}, {$addToSet : { participants: name }});
-    }
+        postData = await db.collection('posts').updateMany({_id: {$in: userEvents}}, {$push : { participants: name }});
+        
+        postData = await db.collection('posts').updateMany({_id: {$in: userMyEvents}}, {$set : { author: name }});
 
-    if (oldEmail !== email) {
-        const data = await db.collection('accounts').updateOne({ email: email }, { $set: { verified: false } });
-
-        // create a token
-        const token = createToken(user._id);
-
-        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
-
-        await sendEmail(email, "JoinIn: Verify your new email", `<h1>Please verify your updated email by clicking the following link: <a href=${verificationUrl}>Verification Link</a></h1>`);
+        postData = await db.collection('posts').updateMany({}, {$pull : { participants: oldName }});
     }
 
     res.json(data);
@@ -152,15 +148,23 @@ const getSubscribedEvents = async (req, res) => {
 
 const getUserEvents = async (req, res) => {
   const db = database.getDatabase();
-  const user = await db.collection("accounts").findOne({ email: req.params.email });
 
-  const eventIds = user.myEvents.map(id => new objectId(id));
+  console.log("getUserEvents: ", req.params);
+try{
+    const user = await db.collection("accounts").findOne({ email: req.params.email });
 
-  const events = await db.collection("posts").find({
-    _id: { $in: eventIds }
-  }).toArray();
+    const eventIds = user.myEvents.map(id => new objectId(id));
 
-  res.json(events);
+    const events = await db.collection("posts").find({
+        _id: { $in: eventIds }
+    }).toArray();
+    res.json(events);
+}
+catch(error){
+    console.error("Error in getUserEvents: ", error);
+    throw error;
+}
+  
 };
 
 const verifyEmail = async function (req, res) {

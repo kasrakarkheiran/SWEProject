@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import {updateAccount} from '../api'
 import '../styles/EditProfileModal.css';
 
-export const EditProfileModal = ({user, isOpen, onClose, onSave, setWaitingForVerification }) => {
+export const EditProfileModal = ({user, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -45,16 +45,11 @@ export const EditProfileModal = ({user, isOpen, onClose, onSave, setWaitingForVe
         newPassword: formData.newPassword
       };
 
-      const oldEmail = user.email;
-
       const response = await updateAccount(user.email, updatedUser);
 
       if(response.status == 200){
         onSave(updatedUser);
         onClose();
-        if (oldEmail !== formData.email) {
-          setWaitingForVerification(true);
-        }
       } else {
         setFormError(response);
       }

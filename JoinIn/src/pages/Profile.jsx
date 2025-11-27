@@ -33,8 +33,6 @@ export function Profile() {
   const [subscribed, setSubscribed] = useState([]);
   const [events, setEvents] = useState([]);
 
-  const [waitingForVerification, setWaitingForVerification] = useState(false);
-
   useEffect(()=>{
     // re-run whenever user object changes (email or their events/subscriptions change)
     if(!user?.email){
@@ -456,15 +454,7 @@ export function Profile() {
             dispatch({ type: 'UPDATE_USER', payload: newUser });
             localStorage.setItem('user', JSON.stringify(newUser));
           }}
-          setWaitingForVerification={setWaitingForVerification}
         />
-        { waitingForVerification && (
-          <div className="verification-notice">
-            <div className="notice-content">
-              <p className="notice-text">Verification email has been sent. Please verify your new email.</p>
-            </div>
-          </div>
-        ) }
       </div>
     </div>
   );
