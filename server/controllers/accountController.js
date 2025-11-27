@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 const { createAccountInDb } = require('../services/accountService');
 const validator = require('validator')
-
+const { createToken } = require('./authController');
+const { sendEmail } = require('./authController');
 
 
 const getMe = async (req, res) => {
@@ -66,6 +67,9 @@ const updateAccount = async (req, res) => {
     const user = await db.collection('accounts').findOne({ email: req.params.email });
     if (!user) throw Error("User not found");
 
+    const oldName = user.name;
+    const oldEmail = user.email;
+
     // validates fields
     const hashedPassword = await updateAccountHelper(user, name, email, currentPassword, newPassword)
 
@@ -79,6 +83,23 @@ const updateAccount = async (req, res) => {
         { email: req.params.email }, 
         updateObj
     );
+    
+    if (name !== oldName) {
+        let postData = await db.collection('posts').updateMany({}, {$pull : { participants: oldName }});
+
+        postData = await db.collection('posts').updateMany({}, {$addToSet : { participants: name }});
+    }
+
+    if (oldEmail !== email) {
+        const data = await db.collection('accounts').updateOne({ email: email }, { $set: { verified: false } });
+
+        // create a token
+        const token = createToken(user._id);
+
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+
+        await sendEmail(email, "JoinIn: Verify your new email", `<h1>Please verify your updated email by clicking the following link: <a href=${verificationUrl}>Verification Link</a></h1>`);
+    }
 
     res.json(data);
     } catch (err) {

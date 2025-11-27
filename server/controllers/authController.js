@@ -127,4 +127,4 @@ const sendEmail = async function(to, subject, htmlBody) {
     return { to: to, subject: subject, htmlBody: htmlBody };
 }
 
-module.exports = {signupUser, loginUser, sendEmail}
+module.exports = {signupUser, loginUser, sendEmail, createToken}

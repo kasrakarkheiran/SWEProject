@@ -173,7 +173,7 @@ const deletePost = async (request, response) => {
         await db.collection('accounts').updateMany({}, { $pull: { events: postIdStr, myEvents: postIdStr } });
 
         // delete the post document
-        const result = await db.collection('posts').deleteOne({ _id: oid });
+        const result = await db.collection('posts').deleteOne({ _id: oid })
         response.json(result);
     }catch(err){
         console.error('Delete post error:', err);
