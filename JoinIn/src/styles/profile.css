@@ -431,3 +431,27 @@
     padding: 1.5rem;
   }
 }
+
+/* Verification Notice */
+.verification-notice {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.15);
+  padding: 3rem 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  z-index: 10;
+  position: relative;
+  text-align: center;
+}
+
+.notice-content {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.notice-text{
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
