@@ -52,4 +52,5 @@ To run the project locally, follow these steps:
     ```
 
 5. **Access the app**: 
+
    - Open the browser and enter `http://localhost:5173/` into the search bar.
