@@ -12,7 +12,7 @@ Using this application, users can:
 - Post a new event
 - Join and subscribe to other events as a participant
 - Change email, username, and password
-- Delete posts with administrative privlege
+- Delete posts with administrative privilege
 
 ## Tech Stack
 
