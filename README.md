@@ -46,11 +46,14 @@ To run the project locally, follow these steps:
     FRONTEND_URL=http://localhost:5173      # localhost port to access frontend
     ```
 4. **Start the development server**:
-   - In two separate terminals, in the `./JoinIn` and `./server` directories, run:
+   - In two separate terminals, in the `./JoinIn` directory run:
     ```bash
-    npm run dev
+        npm run dev
     ```
-
-5. **Access the app**: 
+    And in the `./server` directory run:
+   ```bash
+        node ./server.js
+    ```
+6. **Access the app**: 
 
    - Open the browser and enter `http://localhost:5173/` into the search bar.
